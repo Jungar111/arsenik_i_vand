@@ -2,7 +2,8 @@ library(lattice)
 
 
 
-
+# Frederik wd
+#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
 
 # Asger wd
 # setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
