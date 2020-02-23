@@ -1,6 +1,6 @@
 library(lattice)
 
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
+setwd("/Data")
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 head(fblad)
 fblad1 <- fblad[c(15:549), ]
