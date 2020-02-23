@@ -1,6 +1,12 @@
 library(lattice)
 
-setwd("/Data")
+
+
+
+
+# Asger wd
+# setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
+
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 head(fblad)
 fblad1 <- fblad[c(15:549), ]
