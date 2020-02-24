@@ -41,17 +41,12 @@ plot(prediction.data.original$pred, fblad$events[order(prediction.data.original$
 lines(prediction.data.original$lower, fblad$events, col="red")
 lines(prediction.data.original$upper, fblad$events, col="red")
 
-# JEG FORSTÅR IKKE KODEN HERUNDER!!!
-#index for undersøgelses punkt 
-i1 <- 255
-# sandsynlighhed for at få kræft i indexpunktet 
-p1 <- fblad$events[i1]/fblad$at.risk[i1]*100
 
 #plot i log data 
 plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, fblad$events, col="red")
 lines(prediction.data$upper, fblad$events, col="red")
-points(var[i1],p1,col="green")
+
 
 hist(log(fblad$events/fblad$at.risk))
 cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
