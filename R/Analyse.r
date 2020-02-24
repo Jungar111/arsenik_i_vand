@@ -1,4 +1,3 @@
-library(lattice)
 # Frederik wd
 #setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
 
@@ -23,7 +22,8 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc + age + log(at.risk),family=poisson(link=log),data=fblad) 
+analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+summary(analysis)
 
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
@@ -33,11 +33,13 @@ prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 prediction.data.original<-exp(prediction.data)
+prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
+
 
 # plots i log transformation 
-plot(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$pred, col="blue")
-lines(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$lower, col="red")
-lines(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$upper, col="red")
+plot(prediction.data.original$pred, fblad$events[order(prediction.data.original$pred)], col="blue")
+lines(prediction.data$lower, fblad$events, col="red")
+lines(prediction.data$upper, col="red")
 
 # JEG FORSTÅR IKKE KODEN HERUNDER!!!
 #index for undersøgelses punkt 
@@ -50,5 +52,6 @@ lines(prediction.data.original$lower,var, col="red")
 lines(prediction.data.original$upper,var, col="red")
 points(var[i1],p1,col="green")
 
-
+hist(log(fblad$events/fblad$at.risk))
+cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
 
