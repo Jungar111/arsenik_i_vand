@@ -3,13 +3,10 @@ library(lattice)
 
 
 # Frederik wd
-#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
-
-# Joachim wd
-setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
+# setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 head(fblad)
@@ -20,7 +17,7 @@ N <- length(fblad1$events)
 p.hat <- sum(fblad1$events/N)
 
 # sæt en formel til glm
-var <- fblad1$conc
+var <- fblad1$conc + fblad$age
 
 analysis<-glm(events~var,family=poisson(link=log),data=fblad1) 
 
