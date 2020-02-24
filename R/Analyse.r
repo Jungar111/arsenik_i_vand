@@ -1,7 +1,4 @@
 library(lattice)
-
-
-
 # Frederik wd
 #setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
 
@@ -17,19 +14,16 @@ setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4.
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 head(fblad)
-fblad1 <- fblad[c(15:549), ]
 
-N <- length(fblad1$events)
+# Antal observationer
+N <- length(fblad$events)
 
-p.hat <- sum(fblad1$events/N)
+# p.hat (empirisk sandsynlighed)
+p.hat <- sum(fblad$events/N)
 
-# sæt en formel til glm
-conc <- fblad1$conc
-age <- fblad1$age
-pop <- fblad1$at.risk
-# flere variable...
 
-analysis<-glm(events~conc + age,family=poisson(link=log),data=fblad1) 
+# Her defineres modellen:
+analysis<-glm(events~conc + age + log(at.risk),family=poisson(link=log),data=fblad1) 
 
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
@@ -37,7 +31,6 @@ drop1(analysis, test="Chisq")
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
-
 
 prediction.data.original<-exp(prediction.data)
 
