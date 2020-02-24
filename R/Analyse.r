@@ -20,9 +20,12 @@ N <- length(fblad1$events)
 p.hat <- sum(fblad1$events/N)
 
 # sæt en formel til glm
-var <- fblad1$conc
+conc <- fblad1$conc
+age <- fblad1$age
+pop <- fblad1$at.risk
+# flere variable...
 
-analysis<-glm(events~var,family=poisson(link=log),data=fblad1) 
+analysis<-glm(events~conc + age,family=poisson(link=log),data=fblad1) 
 
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
