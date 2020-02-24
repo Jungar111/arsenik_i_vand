@@ -25,8 +25,6 @@ p.hat <- sum(fblad$events/N)
 analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
-print("pikkemand")
-
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
 
