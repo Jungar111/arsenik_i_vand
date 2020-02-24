@@ -9,7 +9,7 @@ library(lattice)
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 
 #Oskar wd 
-setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
+# setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
 
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
@@ -23,7 +23,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc + age + log(at.risk),family=poisson(link=log),data=fblad1) 
+analysis<-glm(events~conc + age + log(at.risk),family=poisson(link=log),data=fblad) 
 
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
@@ -35,15 +35,15 @@ prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+
 prediction.data.original<-exp(prediction.data)
 
 # plots i log transformation 
-plot(var,prediction.data$pred, col="blue")
-lines(var,prediction.data$lower, col="red")
-lines(var,prediction.data$upper, col="red")
+plot(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$pred, col="blue")
+lines(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$lower, col="red")
+lines(fblad$conc + fblad$age + log(fblad$at.risk),prediction.data$upper, col="red")
 
-
+# JEG FORSTÅR IKKE KODEN HERUNDER!!!
 #index for undersøgelses punkt 
 i1 <- 255
 # sandsynlighhed for at få kræft i indexpunktet 
-p1 <- fblad1$events[i1]/fblad1$at.risk[i1]*100
+p1 <- fblad$events[i1]/fblad$at.risk[i1]*100
 #plot af sandsynlighed for kræft i orginal data 
 plot(prediction.data.original$pred,var)
 lines(prediction.data.original$lower,var, col="red")
