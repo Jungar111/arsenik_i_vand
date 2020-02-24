@@ -1,5 +1,5 @@
 # Frederik wd
-#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
@@ -36,20 +36,21 @@ prediction.data.original<-exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
 
 
-# plots i log transformation 
+# plots i original data transformation 
 plot(prediction.data.original$pred, fblad$events[order(prediction.data.original$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, col="red")
+lines(prediction.data.original$lower, fblad$events, col="red")
+lines(prediction.data.original$upper, fblad$events, col="red")
 
 # JEG FORSTÅR IKKE KODEN HERUNDER!!!
 #index for undersøgelses punkt 
 i1 <- 255
 # sandsynlighhed for at få kræft i indexpunktet 
 p1 <- fblad$events[i1]/fblad$at.risk[i1]*100
-#plot af sandsynlighed for kræft i orginal data 
-plot(prediction.data.original$pred,var)
-lines(prediction.data.original$lower,var, col="red")
-lines(prediction.data.original$upper,var, col="red")
+
+#plot i log data 
+plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
+lines(prediction.data$lower, fblad$events, col="red")
+lines(prediction.data$upper, fblad$events, col="red")
 points(var[i1],p1,col="green")
 
 hist(log(fblad$events/fblad$at.risk))
