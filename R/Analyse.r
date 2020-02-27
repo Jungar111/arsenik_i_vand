@@ -23,7 +23,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+analysis<-glm(events~conc + age,family=poisson(link=log),data=fblad, offset = log(at.risk)) 
 summary(analysis)
 
 
@@ -48,8 +48,8 @@ lines(prediction.data.original$upper, fblad$events[order(prediction.data.origina
 
 #plot i log transformation 
 plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+lines(prediction.data$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+lines(prediction.data$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
 # Histogram over log transformeret procent for at få kræft
 hist(log(fblad$events/fblad$at.risk))
@@ -60,6 +60,9 @@ cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
 # Taylor udvider til ny analysis
 analysis2 <- update(analysis, ~.+I(conc^2)+I(age^2))
 summary(analysis2)
+
+# analysis3 <- update(analysis2, ~.-I(conc^2))
+# summary(analysis3)
 
 # Hvor god er modellen 
 drop1(analysis2, test="Chisq")
@@ -73,12 +76,16 @@ prediction.data.original <- prediction.data.original[order(fblad$events, decreas
 
 
 # plots i original data transformation 
-plot(prediction.data.original$pred, fblad$events, col="blue")
-lines(prediction.data.original$lower, fblad$events, col="red")
-lines(prediction.data.original$upper, fblad$events, col="red")
+plot(prediction.data.original$pred, fblad$events[order(fblad$events, decreasing = TRUE)], col="blue")
+lines(prediction.data.original$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+lines(prediction.data.original$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
 
 #plot i log data 
 plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+lines(prediction.data$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+
+
+
+lines(prediction.data$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+
