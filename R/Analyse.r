@@ -5,10 +5,11 @@
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
 
 # Joachim wd
-setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
+#setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 
 #Oskar wd 
-# setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
+setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
+
 
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
@@ -23,7 +24,9 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+#analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+
+analysis<-glm(events~conc^2+age^2,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
 
