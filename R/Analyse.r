@@ -23,7 +23,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+analysis<-glm(events~sqrt(conc)+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
 
@@ -46,6 +46,11 @@ lines(prediction.data.original$lower, fblad$events[order(prediction.data.origina
 lines(prediction.data.original$upper, fblad$events[order(prediction.data.original$pred)], col="red")
 
 
+# Laver foreløbig test, tror det her er den rigtige måde at plotte det på
+cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
+plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,0))
+
+
 #plot i log transformation 
 plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, fblad$events, col="red")
@@ -58,7 +63,7 @@ hist(log(fblad$events/fblad$at.risk))
 cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
 
 # Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I(conc^2)+I(age^2))
+analysis2 <- update(analysis, ~.+I(sqrt(conc)^2)+I(age^2))
 summary(analysis2)
 
 # Hvor god er modellen 
@@ -76,6 +81,12 @@ prediction.data.original <- prediction.data.original[order(fblad$events, decreas
 plot(prediction.data.original$pred, fblad$events, col="blue")
 lines(prediction.data.original$lower, fblad$events, col="red")
 lines(prediction.data.original$upper, fblad$events, col="red")
+
+
+# Laver foreløbig test, tror det her er den rigtige måde at plotte det på
+cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
+plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 25), ylim=c(0, 25))
+fblad$events[order(fblad$events, decreasing = TRUE)]
 
 
 #plot i log data 
