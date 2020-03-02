@@ -1,8 +1,8 @@
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
+setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -15,20 +15,20 @@ fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
 fblad$gender <- "Female"
 mblad$gender <- "Male"
-blad <- rbind(fblad$gender,mblad$gender)
+blad <- rbind(fblad,mblad)
 
-head(fblad)
-#fblad <- fblad[c(15:549), ]
+head(blad)
+#blad <- blad[c(15:549), ]
 
 # Antal observationer
-N <- length(fblad$events)
+N <- length(blad$events)
 
 # p.hat (empirisk sandsynlighed)
-p.hat <- sum(fblad$events/N)
+p.hat <- sum(blad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+analysis<-glm(events~conc+age,family=poisson(link=log),data=blad,offset=log(at.risk)) 
 summary(analysis)
 
 
@@ -46,26 +46,26 @@ prediction.data.original <- prediction.data.original[order(prediction.data.origi
 
 
 # Sorterede plots i original data transformation 
-plot(prediction.data.original$pred, fblad$events[order(prediction.data.original$pred)], col="blue")
-lines(prediction.data.original$lower, fblad$events[order(prediction.data.original$pred)], col="red")
-lines(prediction.data.original$upper, fblad$events[order(prediction.data.original$pred)], col="red")
+plot(prediction.data.original$pred, blad$events[order(prediction.data.original$pred)], col="blue")
+lines(prediction.data.original$lower, blad$events[order(prediction.data.original$pred)], col="red")
+lines(prediction.data.original$upper, blad$events[order(prediction.data.original$pred)], col="red")
 
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
-cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,0))
+cbind(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
+plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,0))
 
 
 #plot i log transformation 
-plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
+lines(prediction.data$lower, blad$events, col="red")
+lines(prediction.data$upper, blad$events, col="red")
 
 # Histogram over log transformeret procent for at få kræft
-hist(log(fblad$events/fblad$at.risk))
+hist(log(blad$events/blad$at.risk))
 
 # Data til histogrammet oven over
-cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
+cbind(blad[blad$events>4,] ,log(blad$events/blad$at.risk)[blad$events > 4])
 
 # Taylor udvider til ny analysis
 analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
@@ -80,25 +80,25 @@ prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 prediction.data.original <- exp(prediction.data)
-prediction.data.original <- prediction.data.original[order(fblad$events, decreasing = TRUE),]
+prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
 
 # plots i original data transformation 
-#plot(prediction.data.original$pred, fblad$events, col="blue")
-#lines(prediction.data.original$lower, fblad$events, col="red")
-#lines(prediction.data.original$upper, fblad$events, col="red")
+#plot(prediction.data.original$pred, blad$events, col="blue")
+#lines(prediction.data.original$lower, blad$events, col="red")
+#lines(prediction.data.original$upper, blad$events, col="red")
 
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
-cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 5), ylim=c(0, 5))
-plot(round(prediction.data.original$pred,2),fblad$events[order(fblad$events, decreasing = TRUE)], xlim=c(0, 5), ylim=c(0, 5))
+cbind(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
+plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 5), ylim=c(0, 5))
+plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, 5), ylim=c(0, 5))
 lines(0:25,0:25, type="l")
 
-fblad$events[order(fblad$events, decreasing = TRUE)]
+blad$events[order(blad$events, decreasing = TRUE)]
 
 
 #plot i log data 
-plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
+lines(prediction.data$lower, blad$events, col="red")
+lines(prediction.data$upper, blad$events, col="red")
