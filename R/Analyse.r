@@ -86,6 +86,5 @@ plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue"
 lines(prediction.data$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
 
-
 lines(prediction.data$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
