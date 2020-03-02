@@ -12,6 +12,11 @@ setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\Ars
 
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
+mblad <- read.table("mblad.sw.dat", header=TRUE)
+fblad$gender <- "Female"
+mblad$gender <- "Male"
+blad <- rbind(fblad$gender,mblad$gender)
+
 head(fblad)
 #fblad <- fblad[c(15:549), ]
 
@@ -23,7 +28,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~sqrt(conc)+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
 
@@ -63,7 +68,8 @@ hist(log(fblad$events/fblad$at.risk))
 cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
 
 # Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I(sqrt(conc)^2)+I(age^2))
+analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
+analysis2 <- update(analysis2, ~.+I(1/2*conc^3))
 summary(analysis2)
 
 # Hvor god er modellen 
@@ -78,14 +84,17 @@ prediction.data.original <- prediction.data.original[order(fblad$events, decreas
 
 
 # plots i original data transformation 
-plot(prediction.data.original$pred, fblad$events, col="blue")
-lines(prediction.data.original$lower, fblad$events, col="red")
-lines(prediction.data.original$upper, fblad$events, col="red")
+#plot(prediction.data.original$pred, fblad$events, col="blue")
+#lines(prediction.data.original$lower, fblad$events, col="red")
+#lines(prediction.data.original$upper, fblad$events, col="red")
 
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 25), ylim=c(0, 25))
+plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 5), ylim=c(0, 5))
+plot(round(prediction.data.original$pred,2),fblad$events[order(fblad$events, decreasing = TRUE)], xlim=c(0, 5), ylim=c(0, 5))
+lines(0:25,0:25, type="l")
+
 fblad$events[order(fblad$events, decreasing = TRUE)]
 
 
