@@ -69,7 +69,7 @@ cbind(blad[blad$events>4,] ,log(blad$events/blad$at.risk)[blad$events > 4])
 
 # Taylor udvider til ny analysis
 analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
-analysis2 <- update(analysis2, ~.+I(1/2*conc^3))
+analysis2 <- update(analysis2, ~.+I(1/3*conc^3))
 summary(analysis2)
 
 # Hvor god er modellen 
@@ -88,12 +88,13 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
+maxr <- 85
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 cbind(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 5), ylim=c(0, 5))
-plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, 5), ylim=c(0, 5))
-lines(0:25,0:25, type="l")
+plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, maxr), ylim=c(0, maxr))
+plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
+lines(0:maxr,0:maxr, type="l")
 
 blad$events[order(blad$events, decreasing = TRUE)]
 
