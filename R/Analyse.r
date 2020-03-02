@@ -10,6 +10,7 @@ setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Se
 #Oskar wd 
 # setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
 
+set.seed(69)
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
@@ -88,15 +89,26 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
-maxr <- 85
+maxr <- 5
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
-cbind(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, maxr), ylim=c(0, maxr))
 plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
 lines(0:maxr,0:maxr, type="l")
 
-blad$events[order(blad$events, decreasing = TRUE)]
+v = vector()
+x = vector()
+
+blad$events<- blad$events[order(blad$events, decreasing = TRUE)]
+
+for (i in 1:length(prediction.data.original$pred)){
+  res <- mean(blad$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  v = c(v,res)
+  x = c(x, 0.1*i)
+}
+
+plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr))
+lines(0:maxr,0:maxr, type="l")
+
 
 
 #plot i log data 
