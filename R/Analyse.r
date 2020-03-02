@@ -23,7 +23,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc + age,family=poisson(link=log),data=fblad, offset = log(at.risk)) 
+analysis<-glm(events~log(1+conc) + age,family=poisson(link=log),data=fblad, offset = log(at.risk)) 
 summary(analysis)
 
 
@@ -75,13 +75,13 @@ prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(fblad$events, decreasing = TRUE),]
 
 
-# plots i original data transformation 
+# plots i original data transformation
 plot(prediction.data.original$pred, fblad$events[order(fblad$events, decreasing = TRUE)], col="blue")
 lines(prediction.data.original$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 lines(prediction.data.original$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
 
-#plot i log data 
+#plot i log data
 plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
 
