@@ -1,8 +1,8 @@
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
+setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -23,7 +23,7 @@ p.hat <- sum(fblad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~sqrt(conc)+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+analysis<-glm(events~log(1 + conc) + age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
 
@@ -63,7 +63,7 @@ hist(log(fblad$events/fblad$at.risk))
 cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
 
 # Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I(sqrt(conc)^2)+I(age^2))
+analysis2 <- update(analysis, ~.+1/2*I((log(1 + conc))^2) .+ 1/2*I((age))^2)
 summary(analysis2)
 
 # Hvor god er modellen 
@@ -85,11 +85,12 @@ lines(prediction.data.original$upper, fblad$events, col="red")
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 cbind(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
-plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 25), ylim=c(0, 25))
+plot(fblad$events[order(fblad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, 5), ylim=c(0, 5))
 fblad$events[order(fblad$events, decreasing = TRUE)]
 
 
 #plot i log data 
-plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+plot(prediction.data$pred, fblad$events[order(fblad$events, decreasing = TRUE)], col="blue")
+lines(prediction.data$lower, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+lines(prediction.data$upper, fblad$events[order(fblad$events, decreasing = TRUE)], col="red")
+
