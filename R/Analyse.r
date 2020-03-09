@@ -10,7 +10,7 @@ mblad$gender <- "Male"
 blad <- rbind(fblad,mblad)
 
 head(blad)
-#blad <- blad[c(15:549), ]
+# blad <- blad[c(15:549), ]
 
 # Antal observationer
 N <- length(blad$events)
@@ -19,14 +19,14 @@ N <- length(blad$events)
 p.hat <- sum(blad$events/N)
 
 # Her defineres modellen:
-analysis<-glm(events~log(1 + conc) + age + I(age^2) + ,family=poisson(link=log),data=blad, offset=log(at.risk)) 
+analysis <- glm(events~log(1 + conc) + age + I(age^2), family=poisson(link=log), data=blad, offset=log(at.risk)) 
 summary(analysis)
 
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
 
 # Laver signifikans niveauer 
-prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
+prediction.temp<-as.data.frame(predict(analysis,se.fit=T))?
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 # Residual sum of squares (SSE)
