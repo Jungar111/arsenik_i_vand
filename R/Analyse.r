@@ -29,7 +29,7 @@ p.hat <- sum(blad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=blad,offset=log(at.risk)) 
+analysis <- glm(events ~ log(1 + conc) + age + I(age^2),family=poisson(link=log),data=blad, offset=log(at.risk))
 summary(analysis)
 
 
