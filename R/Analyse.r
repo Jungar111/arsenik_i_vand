@@ -1,8 +1,8 @@
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -29,9 +29,8 @@ p.hat <- sum(blad$events/N)
 
 
 # Her defineres modellen:
-analysis<-glm(events~conc+age,family=poisson(link=log),data=blad,offset=log(at.risk)) 
+analysis<-glm(events~conc+sqrt(age),family=poisson(link=log),data=blad,offset=log(at.risk)) 
 summary(analysis)
-
 
 
 # Hvor god er modellen 
@@ -69,8 +68,12 @@ hist(log(blad$events/blad$at.risk))
 cbind(blad[blad$events>4,] ,log(blad$events/blad$at.risk)[blad$events > 4])
 
 # Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
-analysis2 <- update(analysis2, ~.+I(1/3*conc^3))
+analysis2 <- update(analysis, ~.+I(conc^2)+I(sqrt(age)^2))
+analysis2 <- update(analysis2, ~.+I(conc^3)+I(sqrt(age)^3))
+analysis2 <- update(analysis2, ~.+I(conc^4))
+analysis2 <- update(analysis2, ~.+I(conc^5))
+analysis2 <- update(analysis2, ~.+I(conc^6))
+analysis2 <- update(analysis2, ~.+I(conc^7))
 summary(analysis2)
 
 # Hvor god er modellen 
