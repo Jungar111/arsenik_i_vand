@@ -1,3 +1,5 @@
+library("mgcv")
+
 # Frederik wd
 #setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
@@ -16,7 +18,11 @@ fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
 fblad$gender <- "Female"
 mblad$gender <- "Male"
-blad <- rbind(fblad,mblad)
+fblad$female <- 1
+mblad$female <- 0
+blad <- rbind(fblad,mblad) 
+
+blad[c(175:220), ]
 
 head(blad)
 #blad <- blad[c(15:549), ] 
@@ -34,6 +40,7 @@ max(blad$conc)
 analysis<-glm(events ~ conc + age + gender,family=poisson(link=log),data=blad,offset=log(at.risk))
 
 summary(analysis)
+
 
 
 # Hvor god er modellen 
@@ -71,15 +78,18 @@ hist(log(blad$events/blad$at.risk))
 cbind(blad[blad$events>4,] ,log(blad$events/blad$at.risk)[blad$events > 4])
 
 # Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I((age)^2))
-analysis2 <- update(analysis2, ~.+I((age)^3))
+analysis2 <- update(analysis, ~.+I((age)^2) + I(conc^2))
+analysis2 <- update(analysis2, ~.+I((conc)^3))
 analysis2 <- update(analysis2, ~.+I(conc^4))
 analysis2 <- update(analysis2, ~.+I(conc^5))
 analysis2 <- update(analysis2, ~.+I(conc^6))
 analysis2 <- update(analysis2, ~.+I(conc^7))
 summary(analysis2)
 
-
+analysis2 <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
+                   s(age,conc)+offset(I(log(at.risk))),
+                 family=poisson(link = "log"),
+                 data=blad)
 
 # Hvor god er modellen 
 drop1(analysis2, test="Chisq")
@@ -117,11 +127,11 @@ for (i in 1:length(prediction.data.original$pred)){
 sd.Pred <- sd(prediction.data.original$pred)
 
 length(prediction.data.original$upper)
-plot(x, v, xlim=c(0, maxr))
+plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
-
+plot(analysis2$residuals)
 
 
 a#plot i log data 
@@ -129,3 +139,10 @@ plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, blad$events, col="red")
 lines(prediction.data$upper, blad$events, col="red")
 
+
+gm <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
+      s(age,conc)+offset(I(log(at.risk))),
+    family=poisson(link = "log"),
+    data=blad)
+
+plot(gm)
