@@ -24,8 +24,8 @@ blad <- rbind(fblad,mblad)
 
 N <- length(blad$events)
 
-analysis <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
-                   s(age,conc)+offset(I(log(at.risk))),
+analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female)+s(age,conc)+
+                   offset(I(log(at.risk))),
                  family=poisson(link = "log"),
                  data=blad)
 # AIC
@@ -44,7 +44,7 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
-maxr <- 100
+maxr <- 150
 
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
