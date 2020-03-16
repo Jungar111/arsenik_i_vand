@@ -1,10 +1,10 @@
 library("mgcv")
 
 # Frederik wd
-#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -28,9 +28,8 @@ analysis <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
                    s(age,conc)+offset(I(log(at.risk))),
                  family=poisson(link = "log"),
                  data=blad)
-
-# Hvor god er modellen 
-drop1(analysis, test="Chisq")
+# AIC
+AIC(analysis)
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
@@ -69,4 +68,4 @@ plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
-plot(analysis2$residuals)
+plot(analysis$residuals)
