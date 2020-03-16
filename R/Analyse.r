@@ -14,8 +14,8 @@ fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
 fblad$gender <- "Female"
 mblad$gender <- "Male"
-# fblad$female <- 1
-# mblad$female <- 0
+fblad$female <- 1
+mblad$female <- 0
 blad <- rbind(fblad,mblad)
 
 # Antal observationer
@@ -25,11 +25,11 @@ N <- length(blad$events)
 p.hat <- sum(blad$events/N)
 
 ############### General Additive Model // Model-definering ##############
-analysis <- glm(events~log(1+conc) + age + I(age^2), family=poisson(link= "log"), data=blad)
-# analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+
-#       s(age,conc)+offset(I(log(at.risk))),
-#     family=poisson(link = "log"),
-#     data=blad)
+# analysis <- glm(events~log(1+conc) + age + I(age^2), family=poisson(link= "log"), data=blad, offset=log(at.risk))
+analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+
+      s(age,conc)+offset(I(log(at.risk))),
+    family=poisson(link = "log"),
+    data=blad)
 summary(analysis)
 
 
@@ -75,3 +75,4 @@ plot(x, v, xlim=c(0, maxr))
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
+
