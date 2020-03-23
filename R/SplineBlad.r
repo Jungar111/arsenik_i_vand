@@ -44,6 +44,8 @@ prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
 
+plot(analysis$fitted.values, (blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values),col=blad$group)
+
 # plots i original data transformation 
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
@@ -79,6 +81,4 @@ plot(analysis$residuals)
 plot(analysis$residuals, ylim=c(-10, 20))
 plot(analysis$fitted.values, analysis$residuals)
 
-
-plot(analysis$fitted.values, (blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values),col=blad$group)
 
