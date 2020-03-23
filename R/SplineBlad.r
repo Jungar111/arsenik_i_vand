@@ -14,8 +14,8 @@ setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Se
 
 set.seed(69)
 
-fblad <- read.table("fblad.sw.dat", header=TRUE)
-mblad <- read.table("mblad.sw.dat", header=TRUE)
+fblad <- read.table("fblad.txt", header=TRUE)
+mblad <- read.table("mblad.txt", header=TRUE)
 fblad$gender <- "Female"
 mblad$gender <- "Male"
 fblad$female <- 1
