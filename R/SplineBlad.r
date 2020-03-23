@@ -21,17 +21,18 @@ mblad$gender <- "Male"
 fblad$female <- 1
 mblad$female <- 0
 blad <- rbind(fblad,mblad) 
+blad$village1 <- 1*(blad$group == 1)
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female)+s(age,conc)+
+analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 +
                    offset(I(log(at.risk))),
                  family=poisson(link = "log"),
                  data=blad)
 # AIC
 AIC(analysis)
 
-plot(analysis)
+
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
@@ -70,4 +71,12 @@ plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
-plot(analysis$residuals)
+
+
+
+plot(analysis$residuals, ylim=c(-10, 20))
+plot(analysis$fitted.values, analysis$residuals)
+
+
+plot(analysis$fitted.values, (blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values),col=blad$group)
+
