@@ -1,87 +1,66 @@
+library(mgcv)
 # Frederik wd
 #setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
-
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i vand/Data")
-
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
-
 #Oskar wd 
 setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
+set.seed(69)
 
-
-
-fblad <- read.table("fblad.sw.dat", header=TRUE)
-head(fblad)
-#fblad <- fblad[c(15:549), ]
-
+############### INDLÆSNING AF LUNGE DATA #################
+flun <- read.table("flun.sw.dat", header=TRUE)
+mlun <- read.table("mlun.sw.dat", header = TRUE)
+flun$gender <- "Female"
+mlun$gender <- "Male"
+flun$female <- 1
+mlun$female <- 0
+lun <- rbind(flun,mlun)
 # Antal observationer
-N <- length(fblad$events)
-
+N <- length(lun$events)
 # p.hat (empirisk sandsynlighed)
-p.hat <- sum(fblad$events/N)
+p.hat <- sum(lun$events/N)
 
 
-# Her defineres modellen:
-#analysis<-glm(events~conc+age,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
+################ General Additive Model / GLM / Model-definering ###################
+# analysis <- glm(events~ age + I(age^2) + I(sqrt(conc)) + gender, family=poisson(link= "log"), data=lun, offset=log(at.risk))
+analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+offset(I(log(at.risk))),
+                family=poisson(link = "log"),
+                data=lun)
 
-analysis<-glm(events~conc^2+age^2,family=poisson(link=log),data=fblad,offset=log(at.risk)) 
 summary(analysis)
 
-
-
-# Hvor god er modellen 
-drop1(analysis, test="Chisq")
-
 # Laver signifikans niveauer 
-prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
+prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 # Transformerer dataen tilbage til original tilstand og sorterer data efter pred
 prediction.data.original <- exp(prediction.data)
-prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
+prediction.data.original <- prediction.data.original[order(lun$events, decreasing = TRUE), ]
 
 
-# Sorterede plots i original data transformation 
-plot(prediction.data.original$pred, fblad$events[order(prediction.data.original$pred)], col="blue")
-lines(prediction.data.original$lower, fblad$events[order(prediction.data.original$pred)], col="red")
-lines(prediction.data.original$upper, fblad$events[order(prediction.data.original$pred)], col="red")
+############### PLOT LUN #################
 
+maxr <- 607
 
-#plot i log transformation 
-plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
+# Laver foreløbig test, tror det her er den rigtige måde at plotte det på
+plot(round(prediction.data.original$pred, digits=2), lun$events[order(lun$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr), xlab="Predicted events", ylab="Actual events")
+lines(0:maxr, 0:maxr, type="l")
+sd.Pred <- sd(prediction.data.original$pred[0:maxr])
+lines(0:maxr+sd.Pred, 0:maxr, type="l", col = "red")
+lines(0:maxr-sd.Pred, 0:maxr, type="l", col = "red")
 
-# Histogram over log transformeret procent for at få kræft
-hist(log(fblad$events/fblad$at.risk))
+v = vector()
+x = vector()
 
-# Data til histogrammet oven over
-cbind(fblad[fblad$events>4,] ,log(fblad$events/fblad$at.risk)[fblad$events > 4])
+lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
-# Taylor udvider til ny analysis
-analysis2 <- update(analysis, ~.+I(conc^2)+I(age^2))
-summary(analysis2)
+for (i in 1:length(prediction.data.original$pred)){
+  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  v = c(v, res)
+  x = c(x, 0.1*i)}
 
-# Hvor god er modellen 
-drop1(analysis2, test="Chisq")
+plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
+lines(0:maxr,0:maxr, type="l")
 
-# Laver signifikans niveauer 
-prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
-prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
-
-prediction.data.original <- exp(prediction.data)
-prediction.data.original <- prediction.data.original[order(fblad$events, decreasing = TRUE),]
-
-
-# plots i original data transformation 
-plot(prediction.data.original$pred, fblad$events, col="blue")
-lines(prediction.data.original$lower, fblad$events, col="red")
-lines(prediction.data.original$upper, fblad$events, col="red")
-
-
-#plot i log data 
-plot(prediction.data$pred, fblad$events[order(prediction.data$pred)], col="blue")
-lines(prediction.data$lower, fblad$events, col="red")
-lines(prediction.data$upper, fblad$events, col="red")
