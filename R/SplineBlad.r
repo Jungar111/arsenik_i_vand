@@ -12,6 +12,7 @@ setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Se
 #Oskar wd 
 # setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
 
+
 set.seed(69)
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
