@@ -14,7 +14,7 @@ setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Se
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 
 #Oskar wd 
-# setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
+setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
 
 set.seed(69)
 
@@ -193,6 +193,7 @@ blad$events[order(blad$events, decreasing = TRUE)]
 plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, blad$events, col="red")
 lines(prediction.data$upper, blad$events, col="red")
+<<<<<<< HEAD
 =======
 gm <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
       s(age,conc)+offset(I(log(at.risk))),
@@ -201,3 +202,6 @@ gm <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
 
 plot(gm)
 >>>>>>> Modeltest
+=======
+
+>>>>>>> dfbb22b3e2ff0afc2ae0a2b73cbfdfba48f7c1db
