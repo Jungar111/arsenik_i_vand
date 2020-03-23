@@ -1,24 +1,16 @@
-<<<<<<< HEAD
-library("mgcv")
-
-# Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
-
-# Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
-
-=======
 library(mgcv)
+
 # Frederik wd
 #setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
->>>>>>> origin/JoachimBranch
+
 # Joachim wd
-setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
-#Oskar wd 
-<<<<<<< HEAD
-setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
+#setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
+
+# Oskar wd 
+#setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
 
 set.seed(69)
 
@@ -63,11 +55,9 @@ summary(analysis)
 analysis<-lm(events ~ conc + age + gender,data=blad,offset=log(at.risk))
 
 plot(analysis)
+
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
-=======
-# setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
-set.seed(69)
 
 ############### INDLÆSNING AF LUNGE DATA #################
 flun <- read.table("flun.txt", header=TRUE)
@@ -90,7 +80,6 @@ analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+offset(I(log(at.ri
                 data=lun)
 
 summary(analysis)
->>>>>>> origin/JoachimBranch
 
 # Taylor udvider til ny analysis
 analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
@@ -101,11 +90,11 @@ summary(analysis2)
 drop1(analysis2, test="Chisq")
 
 # Laver signifikans niveauer 
-<<<<<<< HEAD
+
 prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
-=======
+
 prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
->>>>>>> origin/JoachimBranch
+
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 
@@ -114,7 +103,7 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 
 # Transformerer dataen tilbage til original tilstand og sorterer data efter pred
 prediction.data.original <- exp(prediction.data)
-<<<<<<< HEAD
+
 prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
 
 
@@ -166,7 +155,7 @@ prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+
 
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
-=======
+
 prediction.data.original <- prediction.data.original[order(lun$events, decreasing = TRUE), ]
 
 
@@ -252,11 +241,4 @@ lines(0:maxr,0:maxr, type="l")
 plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, blad$events, col="red")
 lines(prediction.data$upper, blad$events, col="red")
-
-gm <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
-      s(age,conc)+offset(I(log(at.risk))),
-    family=poisson(link = "log"),
-    data=blad)
-
-plot(gm)
 
