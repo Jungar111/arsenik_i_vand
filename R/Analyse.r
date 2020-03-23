@@ -17,6 +17,7 @@ mlun$gender <- "Male"
 flun$female <- 1
 mlun$female <- 0
 lun <- rbind(flun,mlun)
+lun$village1 <- 1*(lun$group == 1)
 # Antal observationer
 N <- length(lun$events)
 # p.hat (empirisk sandsynlighed)
@@ -24,12 +25,19 @@ p.hat <- sum(lun$events/N)
 
 
 ################ General Additive Model / GLM / Model-definering ###################
-# analysis <- glm(events~ age + I(age^2) + I(sqrt(conc)) + gender, family=poisson(link= "log"), data=lun, offset=log(at.risk))
-analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+offset(I(log(at.risk))),
+# analysis <- glm(events~ age + I(age^2) + conc + gender*village1, family=poisson(link= "log"), data=lun, offset=log(at.risk))
+analysis <- gam(events~s(age) + s(age,by=female) + s(conc) + gender*village1
+                + offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=lun)
-
 summary(analysis)
+AIC(analysis)
+
+# RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
+par(mfrow=c(2,1))
+plot(analysis$residuals, col=lun$group, main = "Indbygget R funktion")
+plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Manuel beregning")
+par(mfrow=c(1,1))
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
@@ -42,9 +50,9 @@ prediction.data.original <- prediction.data.original[order(lun$events, decreasin
 
 ############### PLOT LUN #################
 
-maxr <- 607
+maxr <- 2
 
-# Laver foreløbig test, tror det her er den rigtige måde at plotte det på
+# PLOTTETID
 plot(round(prediction.data.original$pred, digits=2), lun$events[order(lun$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr), xlab="Predicted events", ylab="Actual events")
 lines(0:maxr, 0:maxr, type="l")
 sd.Pred <- sd(prediction.data.original$pred[0:maxr])
@@ -57,9 +65,9 @@ x = vector()
 lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  res <- mean(lun$events[0.05*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.05*i])
   v = c(v, res)
-  x = c(x, 0.1*i)}
+  x = c(x, 0.05*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
