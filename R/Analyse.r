@@ -4,11 +4,7 @@ library("mgcv")
 # setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-<<<<<<< HEAD
 setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
-=======
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
->>>>>>> Modeltest
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -22,12 +18,12 @@ fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
 fblad$gender <- "Female"
 mblad$gender <- "Male"
-<<<<<<< HEAD
+
 blad <- rbind(fblad,mblad)
 
 head(blad)
 #blad <- blad[c(15:549), ]
-=======
+
 fblad$female <- 1
 mblad$female <- 0
 blad <- rbind(fblad,mblad) 
@@ -36,7 +32,7 @@ blad[c(175:220), ]
 
 head(blad)
 #blad <- blad[c(15:549), ] 
->>>>>>> Modeltest
+
 
 # Antal observationer
 N <- length(blad$events)
@@ -47,12 +43,10 @@ p.hat <- sum(blad$events/N)
 max(blad$conc)
 
 # Her defineres modellen:
-<<<<<<< HEAD
+
 analysis<-glm(events~conc+age,family=poisson(link=log),data=blad,offset=log(at.risk)) 
 summary(analysis)
 
-
-=======
 
 analysis<-glm(events ~ conc + age + gender,family=poisson(link=log),data=blad,offset=log(at.risk))
 
@@ -61,7 +55,6 @@ summary(analysis)
 analysis<-lm(events ~ conc + age + gender,data=blad,offset=log(at.risk))
 
 plot(analysis)
->>>>>>> Modeltest
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
 
@@ -77,14 +70,14 @@ drop1(analysis2, test="Chisq")
 prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
-<<<<<<< HEAD
+
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
-=======
+
 # Transformerer dataen tilbage til original tilstand og sorterer data efter pred
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
->>>>>>> Modeltest
+
 
 
 # Sorterede plots i original data transformation 
@@ -140,8 +133,6 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
-<<<<<<< HEAD
-=======
 
 maxr <- 100
 
@@ -168,40 +159,36 @@ lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
 plot(analysis2$residuals)
->>>>>>> Modeltest
+
 
 maxr <- 85
 
-<<<<<<< HEAD
+
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 cbind(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,1))
 plot(blad$events[order(blad$events, decreasing = TRUE)],round(prediction.data.original$pred,2), xlim=c(0, maxr), ylim=c(0, maxr))
 plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
 lines(0:maxr,0:maxr, type="l")
-=======
+
 a#plot i log data 
 plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, blad$events, col="red")
 lines(prediction.data$upper, blad$events, col="red")
->>>>>>> Modeltest
+
 
 blad$events[order(blad$events, decreasing = TRUE)]
 
-<<<<<<< HEAD
+
 
 #plot i log data 
 plot(prediction.data$pred, blad$events[order(prediction.data$pred)], col="blue")
 lines(prediction.data$lower, blad$events, col="red")
 lines(prediction.data$upper, blad$events, col="red")
-<<<<<<< HEAD
-=======
+
 gm <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
       s(age,conc)+offset(I(log(at.risk))),
     family=poisson(link = "log"),
     data=blad)
 
 plot(gm)
->>>>>>> Modeltest
-=======
 
->>>>>>> dfbb22b3e2ff0afc2ae0a2b73cbfdfba48f7c1db
