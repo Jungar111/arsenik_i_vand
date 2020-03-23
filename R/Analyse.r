@@ -41,8 +41,9 @@ analysis<-glm(events ~ conc + age + gender,family=poisson(link=log),data=blad,of
 
 summary(analysis)
 
+analysis<-lm(events ~ conc + age + gender,data=blad,offset=log(at.risk))
 
-
+plot(analysis)
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
 
@@ -85,6 +86,8 @@ analysis2 <- update(analysis2, ~.+I(conc^5))
 analysis2 <- update(analysis2, ~.+I(conc^6))
 analysis2 <- update(analysis2, ~.+I(conc^7))
 summary(analysis2)
+
+plot(analysis2)
 
 analysis2 <- gam(events~gender+s(age,by=female)+s(age)+s(conc)+
                    s(age,conc)+offset(I(log(at.risk))),

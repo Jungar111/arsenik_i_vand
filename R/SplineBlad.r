@@ -1,10 +1,10 @@
 library("mgcv")
 
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -31,8 +31,10 @@ analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female)+s(age,conc)+
 # AIC
 AIC(analysis)
 
+plot(analysis)
+
 # Laver signifikans niveauer 
-prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
+prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 prediction.data.original <- exp(prediction.data)
