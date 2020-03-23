@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 library("mgcv")
 
 # Frederik wd
@@ -6,10 +7,17 @@ library("mgcv")
 # Asger wd
 setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
+=======
+library(mgcv)
+# Frederik wd
+#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# Asger wd
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+>>>>>>> origin/JoachimBranch
 # Joachim wd
-#setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
-
+setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 #Oskar wd 
+<<<<<<< HEAD
 setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\Arsenik i vand\\Data")
 
 set.seed(69)
@@ -57,6 +65,32 @@ analysis<-lm(events ~ conc + age + gender,data=blad,offset=log(at.risk))
 plot(analysis)
 # Hvor god er modellen 
 drop1(analysis, test="Chisq")
+=======
+# setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
+set.seed(69)
+
+############### INDLÆSNING AF LUNGE DATA #################
+flun <- read.table("flun.txt", header=TRUE)
+mlun <- read.table("mlun.txt", header=TRUE)
+flun$gender <- "Female"
+mlun$gender <- "Male"
+flun$female <- 1
+mlun$female <- 0
+lun <- rbind(flun,mlun)
+# Antal observationer
+N <- length(lun$events)
+# p.hat (empirisk sandsynlighed)
+p.hat <- sum(lun$events/N)
+
+
+################ General Additive Model / GLM / Model-definering ###################
+# analysis <- glm(events~ age + I(age^2) + I(sqrt(conc)) + gender, family=poisson(link= "log"), data=lun, offset=log(at.risk))
+analysis <- gam(events~gender+s(age)+s(age,by=female)+s(conc)+offset(I(log(at.risk))),
+                family=poisson(link = "log"),
+                data=lun)
+
+summary(analysis)
+>>>>>>> origin/JoachimBranch
 
 # Taylor udvider til ny analysis
 analysis2 <- update(analysis, ~.+I(1/2*conc^2)+I(1/2*age^2))
@@ -67,7 +101,11 @@ summary(analysis2)
 drop1(analysis2, test="Chisq")
 
 # Laver signifikans niveauer 
+<<<<<<< HEAD
 prediction.temp<-as.data.frame(predict(analysis2,se.fit=T))
+=======
+prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
+>>>>>>> origin/JoachimBranch
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 
@@ -76,6 +114,7 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 
 # Transformerer dataen tilbage til original tilstand og sorterer data efter pred
 prediction.data.original <- exp(prediction.data)
+<<<<<<< HEAD
 prediction.data.original <- prediction.data.original[order(prediction.data.original$pred),]
 
 
@@ -127,6 +166,26 @@ prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+
 
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
+=======
+prediction.data.original <- prediction.data.original[order(lun$events, decreasing = TRUE), ]
+
+
+############### PLOT LUN #################
+
+maxr <- 607
+
+# Laver foreløbig test, tror det her er den rigtige måde at plotte det på
+plot(round(prediction.data.original$pred, digits=2), lun$events[order(lun$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr), xlab="Predicted events", ylab="Actual events")
+lines(0:maxr, 0:maxr, type="l")
+sd.Pred <- sd(prediction.data.original$pred[0:maxr])
+lines(0:maxr+sd.Pred, 0:maxr, type="l", col = "red")
+lines(0:maxr-sd.Pred, 0:maxr, type="l", col = "red")
+
+v = vector()
+x = vector()
+
+
+lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 
 # plots i original data transformation 
@@ -178,6 +237,15 @@ lines(prediction.data$upper, blad$events, col="red")
 
 blad$events[order(blad$events, decreasing = TRUE)]
 
+
+for (i in 1:length(prediction.data.original$pred)){
+  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  v = c(v, res)
+  x = c(x, 0.1*i)}
+
+
+plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
+lines(0:maxr,0:maxr, type="l")
 
 
 #plot i log data 
