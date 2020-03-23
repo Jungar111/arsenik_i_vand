@@ -1,5 +1,5 @@
 library("mgcv")
-
+library("ggplot2")
 # Frederik wd
 # setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
@@ -36,6 +36,8 @@ AIC(analysis)
 
 plot(analysis)
 
+# ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
+
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
@@ -44,10 +46,13 @@ prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
 
-# plots i original data transformation 
+plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
+
+a# plots i original data transformation 
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
+par(mfrow = c(1,1))
 
 maxr <- 150
 
@@ -58,7 +63,7 @@ lines(0:maxr,0:maxr, type="l")
 v = vector()
 x = vector()
 
-blad$events<- blad$events[order(blad$events, decreasing = TRUE)]
+#blad$events<- blad$events[order(blad$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
   res <- mean(blad$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
@@ -69,7 +74,7 @@ for (i in 1:length(prediction.data.original$pred)){
 sd.Pred <- sd(prediction.data.original$pred)
 
 length(prediction.data.original$upper)
-plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
+plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))blad$
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
@@ -79,6 +84,17 @@ plot(analysis$residuals)
 plot(analysis$residuals, ylim=c(-10, 20))
 plot(analysis$fitted.values, analysis$residuals)
 
+ggplot(blad, aes(events,conc)) + geom_point() + geom_smooth(method = gam, formula = blad$events~s(blad$age)+s(log(1+blad$conc))+s(blad$age,by=blad$female) + blad$gender*blad$village1 + offset(I(log(blad$at.risk))))
 
-plot(analysis$fitted.values, (blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values),col=blad$group)
+par(mfrow = c(2,2))
+gam.check(analysis)
 
+blad.pred <- data.frame(conc = blad$conc,
+                        age = blad$age,
+                        pop = blad$at.risk,
+                        cases = blad$events,
+                        pred.cases = prediction.data.original$pred)
+
+ggplot(blad.pred, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
+
+ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
