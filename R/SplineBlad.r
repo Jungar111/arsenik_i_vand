@@ -1,10 +1,11 @@
 library("mgcv")
 library("ggplot2")
+
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -45,14 +46,16 @@ prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
+par(mfrow = c(1,1))
 
 plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
 
-a# plots i original data transformation 
+length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))<0])
+
+# plots i original data transformation 
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
-par(mfrow = c(1,1))
 
 maxr <- 150
 
