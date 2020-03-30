@@ -64,3 +64,97 @@ for (i in 1:length(prediction.data.original$pred)){
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
 
+
+
+
+
+
+##LABORERAR LITE MED TAIWAN DEATHRATES## 
+library(mgcv)
+#första två: 
+# 4.26, 4.55, 3.95, 0.20, 0.21, 0.20,
+alldata <- c( 0.10, 0.11, 0.10,  0.14, 0.18, 0.10, 0.31, 0.42, 0.19, 0.43, 0.59, 0.25, 0.49, 0.67, 0.30, 0.74, 0.99, 0.48, 1.19, 1.66, 0.73, 1.97, 2.87, 1.09, 2.99, 4.36, 1.67, 4.35, 6.33, 2.43, 6.08, 8.69, 3.58, 8.39, 11.80, 5.19, 12.19, 16.60, 8.18, 19.94, 26.46, 14.27, 33.90, 43.76, 26.03, 60.57, 74.99, 50.08, 105.94, 123.01, 91.88, 168.11, 182.84, 155.54, 254.89, 255.92, 254.11, 338.41, 313.27, 359.21)
+#alldata är endast för 2018 - en bättre modell kan evetuelt hittas genom att titta på flera år
+n <- length(alldata)
+
+
+
+bothsexes <- (alldata[seq(1, length(alldata), 3)])/1000
+
+males <- (alldata[seq(2, length(alldata), 3)])/1000
+females <- (alldata[seq(3, length(alldata), 3)])/1000
+intervalindex <- c(1:length(males))
+
+plot(intervalindex, log(males))  #ser onekligen rätt lineärt ut 
+#Men hur i helvete skall man fånga den der spiken i början (nyfödda är ömtåliga)
+
+
+
+lmmodel <- lm(log(males) ~ intervalindex)
+lmpred <- predict(lmmodel)
+lines(lmpred)
+summary(lmmodel)
+
+#residualplot
+plot(intervalindex, residuals(lmmodel))
+abline(h=0, col="red")
+#den var onekligen inte särskilt lineär after all... 
+
+
+#Jag tror jag behöver mer data
+
+
+
+
+plot(log(intervalindex, males))
+plot(exp(intervalindex), males)
+plot(intervalindex^6,  males)
+
+
+
+
+logm <- log(males)
+logint <- log(intervalindex) 
+plot(logint, logm)
+poly2 <- lm(logm ~ logint + logint^2)
+poly2pred <- predict(poly2)
+lines(poly2pred)
+
+
+## YTTERST BASIC PLOT AV DEATH RATES FOR BOTH, MALES AND FEMALES##
+plot(bothsexes, type="l", col="black")
+lines(males, col="blue")
+lines(females, col="red")
+
+
+
+## LAVER EN ENKEL EXPONENTIELL MODELL ## 
+expmodel <- lm(log(males)~intervalindex)
+summary(expmodel)
+
+
+
+#En lineär tredjegradsmodell
+poly_tre <- lm(males ~intervalindex + I(intervalindex^2) + I(intervalindex^3 ))
+summary(poly_tre)
+polypred <- predict(poly_tre)
+
+
+#Prövar en hurtig spline (variera df för bättre/sämre fit)
+spl3 <- smooth.spline(x = intervalindex, y = males, df = 3)
+
+
+
+#pröver en glm 
+glmmodel <- glm(males ~intervalindex+ intervalindex^2 + intervalindex^3, family = gaussian)
+summary(glmmodel)
+glmpred <- predict(glmmodel)
+
+exppred <- exp(predict(expmodel))
+
+plot(males, col="black")
+lines(pred, col="blue")
+lines(spl3, col ="green" )
+lines(polypred, col="orange")
+lines(glmpred, col="pink")
+
