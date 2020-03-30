@@ -27,7 +27,7 @@ blad$village1 <- 1*(blad$group == 1)
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + age + I(age) + age:gender +
+analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + s(I(age^2))+ age:gender+
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
@@ -35,7 +35,7 @@ analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 
 # AIC
 AIC(analysis)
 
-plot(analysis)
+summary(analysis)
 
 
 # ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
@@ -48,16 +48,16 @@ prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
 par(mfrow = c(1,1))
-<<<<<<< HEAD
+
 
 plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
 
 length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))<0])
 
-=======
+
 plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
 
->>>>>>> 97fa6d6bfdbc1de6209489ef7b8a1d92b8412883
+
 # plots i original data transformation 
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
