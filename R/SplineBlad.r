@@ -1,5 +1,6 @@
 library("mgcv")
 library("ggplot2")
+
 # Frederik wd
 # setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
@@ -26,7 +27,7 @@ blad$village1 <- 1*(blad$group == 1)
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 +
+analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + age + I(age) + age:gender +
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
@@ -35,6 +36,7 @@ analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 
 AIC(analysis)
 
 plot(analysis)
+
 
 # ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
 
@@ -45,10 +47,10 @@ prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+
 prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
-
+par(mfrow = c(1,1))
 plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
 
-a# plots i original data transformation 
+# plots i original data transformation 
 #plot(prediction.data.original$pred, blad$events, col="blue")
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
@@ -98,3 +100,33 @@ blad.pred <- data.frame(conc = blad$conc,
 ggplot(blad.pred, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
 ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
+
+length(analysis$fitted.values[analysis$fitted.values<3])
+
+1-pnorm(4)^1099
+
+length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[(blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)>4])
+
+to <- 90
+
+blad.pred2 <- data.frame(conc = rep(90,to+1),
+                        age = 0:to,
+                        at.risk = 100,
+                        gender = rep('Male',to+1),
+                        female = rep(0,to+1),
+                        village1 = rep(0,to+1))
+
+predict2 <- predict(analysis,newdata = blad.pred2, se.fit=TRUE)
+
+exp(predict2$fit)[80]*35232/5822763*100
+
+
+
+
+s = 0
+
+for (i in 80:length(exp(predict2$fit))){
+  s = s + exp(predict2$fit)[i]
+}
+
+s*201783/5822763*100
