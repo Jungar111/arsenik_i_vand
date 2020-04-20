@@ -158,3 +158,64 @@ lines(spl3, col ="green" )
 lines(polypred, col="orange")
 lines(glmpred, col="pink")
 
+
+
+
+
+################## TAIWAN DEATH RATES SAMMEN MED JOACHIM ######
+deathdata <- read.table("Taiwan_deathrates.txt", header=TRUE)
+summary(deathdata)
+plot(deathdata)
+mrisk <- deathdata$male
+frisk <- deathdata$female
+Age <- deathdata$age 
+length(Age)
+
+#Exponential model 
+#Varför titta på en exponentiell modell? 
+plot(Age, log(mrisk))
+#det är bara år 0 och i slutet det ser lite annorlunda ut. Jag tillåter mig att se bort från födseln då det oavsett inte kan tänkas bero på arsenik (?) 
+
+plot(Age[11:220], log(mrisk[11:220]))
+#det ser absolut rätt lineärt ut vilket innebär att en exponentiell skulle kunna passa rätt bra 
+
+#expmodel <- lm(log(mrisk) ~ Age + I(Age^2) + I(Age^3) + I(Age^4)+ I(Age^5)+ I(Age^6))
+expmodel <- lm(log(mrisk) ~ Age)
+
+summary(expmodel)
+
+exppred <- predict(expmodel, Age=seq(0,100,1))
+
+#Den här predictionen för alla år mellan 3 och 100 plottas 
+ages <- seq(3,100,1)
+
+mrisk.exponential <- exp(predict(expmodel, list(Age=ages)))
+
+plot( Age, mrisk)
+lines(ages, mrisk.exponential, lwd=2, col="red")
+
+#residualplot
+plot(Age, residuals(expmodel))
+abline(h=0, col="red")
+
+#Residualplottet ser ju inte helt bra ut... 
+
+
+
+#MISSLYCKAT FÖRSÖK TILL GLM 
+#men det behövs nog en glm då det absolut är anledning att tro att variansen kommer att vara större för gamlingarna (gamlingar kommer i väldigt varierande skick)
+
+glmmodel <- glm(mrisk ~ Age, family = gaussian)
+summary(glmmodel)
+mrisk.glm <- exp(predict(glmmodel, list(Age=ages)))
+
+plot( Age, mrisk)
+lines(ages, mrisk.glm, lwd=2, col="blue")
+#Det ser ju inte bra ut 
+
+
+
+
+
+
+
