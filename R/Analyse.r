@@ -1,11 +1,11 @@
 library(mgcv)
 library(ggplot2)
 # Frederik wd
-#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
-setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
+#setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 #Oskar wd 
 # setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
 set.seed(69)
@@ -35,7 +35,7 @@ summary(analysis)
 AIC(analysis)
 
 # RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
-par(mfrow=c(2,1))
+par(mfrow=c(1,2))
 plot(analysis$residuals, col=lun$group, main = "Indbygget R funktion")
 plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Manuel beregning")
 par(mfrow=c(1,1))
