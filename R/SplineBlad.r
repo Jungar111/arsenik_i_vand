@@ -29,7 +29,8 @@ blad$village1 <- 1*(blad$group == 1)
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + s(I(age^2))+ age:gender +
+analysis <- gam(events~s(age) + s(conc)  + age:gender + s(conc,log(at.risk))+ s(log(at.risk),by=village1)+
+                  s(log(at.risk)) + s(log(at.risk),conc)+ s(age,by=female)+ gender:log(at.risk)+
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
@@ -39,7 +40,6 @@ AIC(analysis)
 
 summary(analysis)
 
-prediction.temp$fit
 
 # ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
 
@@ -113,7 +113,7 @@ blad.pred <- data.frame(conc = blad$conc,
                         pop = blad$at.risk,
                         cases = blad$events,
                         pred.cases = prediction.data.original$pred)
-
+par(mfrow = c(1,1))
 ggplot(blad.pred, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
 
 ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
