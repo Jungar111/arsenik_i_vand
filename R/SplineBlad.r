@@ -111,7 +111,7 @@ ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) +
 
 length(analysis$fitted.values[analysis$fitted.values<3])
 
-1-pnorm(4)^1099
+1-pnorm(4)^1098
 
 length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[(blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)>4])
 
@@ -128,8 +128,6 @@ predict2 <- predict(analysis,newdata = blad.pred2, se.fit=TRUE)
 
 exp(predict2$fit)[80]*35232/5822763*100
 plot(exp(predict2$fit))
-
-
 
 s = 0
 
