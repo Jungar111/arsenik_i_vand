@@ -139,83 +139,90 @@ for (i in 80:length(exp(predict2$fit))){
 
 s*201783/5822763*100
 
-to <- 90
-#Concentration = 0 ppb
-blad.pred <- data.frame(conc = rep(0, to+1),
-                       age = 0:to,
-                       at.risk=100,
-                       gender = rep("Male", to+1),
-                       female = rep(0, to+1),
-                       village1 = rep(1, to+1))
-predict <- predict(analysis, newdata = blad.pred, se.fit=TRUE)
 
-blad.pred2 <- data.frame(conc = rep(0, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(1, to+1))
-predict2 <- predict(analysis, newdata = blad.pred2, se.fit=TRUE)
-
-#Contration = 50 ppb
-blad.pred3 <- data.frame(conc = rep(50, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict3 <- predict(analysis, newdata = blad.pred3, se.fit=TRUE)
-
-blad.pred4 <- data.frame(conc = rep(50, to+1),
-                         age = 0:to,
-                         at.risk=100,
-                         gender = rep("Female", to+1),
-                         female = rep(1, to+1),
-                         village1 = rep(0, to+1))
-predict4 <- predict(analysis, newdata = blad.pred4, se.fit=TRUE)
-
-
-#Concentration = 300 ppb
-blad.pred5 <- data.frame(conc = rep(300, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict5 <- predict(analysis, newdata = blad.pred5, se.fit=TRUE)
-
-blad.pred6 <- data.frame(conc = rep(300, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict6 <- predict(analysis, newdata = blad.pred6, se.fit=TRUE)
-
-
-#Concentration = 934 ppb
-blad.pred7 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict7 <- predict(analysis, newdata = blad.pred7, se.fit=TRUE)
-
-blad.pred8 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict8 <- predict(analysis, newdata = blad.pred8, se.fit=TRUE)
-
-plot(exp(predict$fit), xlim=c(0,to), ylim=c(0,2), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
-lines(exp(predict2$fit), lty=1, col="red")
-lines(exp(predict3$fit), lty=2, col="blue")
-lines(exp(predict4$fit), lty=2, col="red")
-lines(exp(predict5$fit), lty=3, col="blue")
-lines(exp(predict6$fit), lty=3, col="red")
-lines(exp(predict7$fit), lty=4, col="blue")
-lines(exp(predict8$fit), lty=4, col="red")
-legend(5, 2, legend=c("Male", "Female", "0 ppb","50 ppb", "300 ppb", "934 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
+eventPlot = function(){
+  
+  # Plot diff conc/ages
+  par(mfrow=c(1,1))
+  to <- 90
+  #Concentration = 0 ppb
+  blad.pred <- data.frame(conc = rep(0, to+1),
+                          age = 0:to,
+                          at.risk=100,
+                          gender = rep("Male", to+1),
+                          female = rep(0, to+1),
+                          village1 = rep(1, to+1))
+  predict <- predict(analysis, newdata = blad.pred, se.fit=TRUE)
+  
+  blad.pred2 <- data.frame(conc = rep(0, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Female", to+1),
+                           female = rep(1, to+1),
+                           village1 = rep(1, to+1))
+  predict2 <- predict(analysis, newdata = blad.pred2, se.fit=TRUE)
+  
+  #Contration = 50 ppb
+  blad.pred3 <- data.frame(conc = rep(50, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Male", to+1),
+                           female = rep(0, to+1),
+                           village1 = rep(0, to+1))
+  predict3 <- predict(analysis, newdata = blad.pred3, se.fit=TRUE)
+  
+  blad.pred4 <- data.frame(conc = rep(50, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Female", to+1),
+                           female = rep(1, to+1),
+                           village1 = rep(0, to+1))
+  predict4 <- predict(analysis, newdata = blad.pred4, se.fit=TRUE)
+  
+  
+  #Concentration = 300 ppb
+  blad.pred5 <- data.frame(conc = rep(300, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Male", to+1),
+                           female = rep(0, to+1),
+                           village1 = rep(0, to+1))
+  predict5 <- predict(analysis, newdata = blad.pred5, se.fit=TRUE)
+  
+  blad.pred6 <- data.frame(conc = rep(300, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Female", to+1),
+                           female = rep(1, to+1),
+                           village1 = rep(0, to+1))
+  predict6 <- predict(analysis, newdata = blad.pred6, se.fit=TRUE)
+  
+  
+  #Concentration = 934 ppb
+  blad.pred7 <- data.frame(conc = rep(934, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Male", to+1),
+                           female = rep(0, to+1),
+                           village1 = rep(0, to+1))
+  predict7 <- predict(analysis, newdata = blad.pred7, se.fit=TRUE)
+  
+  blad.pred8 <- data.frame(conc = rep(934, to+1),
+                           age = 0:to,
+                           at.risk=100,
+                           gender = rep("Female", to+1),
+                           female = rep(1, to+1),
+                           village1 = rep(0, to+1))
+  predict8 <- predict(analysis, newdata = blad.pred8, se.fit=TRUE)
+  
+  plot(exp(predict$fit), xlim=c(0,to), ylim=c(0,2), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
+  lines(exp(predict2$fit), lty=1, col="red")
+  lines(exp(predict3$fit), lty=2, col="blue")
+  lines(exp(predict4$fit), lty=2, col="red")
+  lines(exp(predict5$fit), lty=3, col="blue")
+  lines(exp(predict6$fit), lty=3, col="red")
+  lines(exp(predict7$fit), lty=4, col="blue")
+  lines(exp(predict8$fit), lty=4, col="red")
+  legend(5, 2, legend=c("Male", "Female", "0 ppb","50 ppb", "300 ppb", "934 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
+}
+eventPlot()
