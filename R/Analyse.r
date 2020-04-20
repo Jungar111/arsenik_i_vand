@@ -41,7 +41,7 @@ plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analys
 par(mfrow=c(1,1))
 ## Kan det forsvares dette plot? Og hvor mange er ude for vores konfidensinterval ud af 1118?
 length(((lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values))[(lun$events - analysis$fitted.values)/sqrt(analysis$fitted.values) > 4])
-1 - pnorm(3.91)^(1118 - 12)
+1 - pnorm(4)^(1118 - 12)
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
