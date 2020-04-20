@@ -1,5 +1,7 @@
 library("mgcv")
 library("ggplot2")
+library(RColorBrewer)
+library('unikn')  
 
 # Frederik wd
 # setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
@@ -27,7 +29,7 @@ blad$village1 <- 1*(blad$group == 1)
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + s(I(age^2))+ age:gender+
+analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + s(I(age^2))+ age:gender +
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
@@ -51,12 +53,12 @@ prediction.data.original <- prediction.data.original[order(blad$events, decreasi
 par(mfrow = c(1,1))
 
 
-plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
+plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=(blad$group*2))
 
 length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))<0])
 
 
-plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
+plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=c('red','black','cyan' ,rep('lightblue',40)))
 
 
 # plots i original data transformation 
@@ -66,6 +68,13 @@ plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analys
 
 maxr <- 150
 
+blad[analysis$fitted.values>20,]
+
+
+blad[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>4,]
+((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>8]
+analysis$fitted.values[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>8]
+blad$events[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>8]
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
 plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
 lines(0:maxr,0:maxr, type="l")
