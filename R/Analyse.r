@@ -1,11 +1,11 @@
 library(mgcv)
 library(ggplot2)
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
-#setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
+setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
 #Oskar wd 
 # setwd("C:\\Users\\User\\OneDrive - Danmarks Tekniske Universitet\\SAS_030919\\4. Semester\\42584_Fagprojekt\\Arsenik i drikkevand\\42584_Data\\arsenik_i_vand\\Data")
 set.seed(69)
@@ -35,7 +35,7 @@ summary(analysis)
 AIC(analysis)
 
 # RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
-par(mfrow=c(1,2))
+par(mfrow=c(2,1))
 plot(analysis$residuals, col=lun$group, main = "Indbygget R funktion")
 plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Manuel beregning")
 par(mfrow=c(1,1))
@@ -69,9 +69,9 @@ x = vector()
 # lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
+  res <- mean(lun$events[0.02*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.02*i])
   v = c(v, res)
-  x = c(x, 0.01*i)}
+  x = c(x, 0.02*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
@@ -129,7 +129,7 @@ lun.pred6 <- data.frame(conc = rep(934, to+1),
                         village1 = rep(0, to+1))
 predict6 <- predict(analysis, newdata = lun.pred6, se.fit=TRUE)
 
-plot(exp(predict$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
+plot(exp(predict$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Risks at different conc. and ages")
 lines(exp(predict2$fit), lty=1, col="red")
 lines(exp(predict3$fit), lty=2, col="blue")
 lines(exp(predict4$fit), lty=2, col="red")
