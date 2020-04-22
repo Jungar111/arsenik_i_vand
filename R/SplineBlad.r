@@ -4,10 +4,10 @@ library(RColorBrewer)
 library('unikn')  
 
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -34,11 +34,13 @@ for (i in 1:42){
     blad$nrWell[blad$group == i + 1] <- unique(well$nwell[well$village == i])
 }
 
-blad
+#fjerner outliers 
+
+blad <- blad[-c(19,160,243,532,741,761,941,954,1033,1047,1069),]
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age) + s(conc) + age:gender +
+analysis <- gam(events~s(age) + s(conc)  + s(age,nrWell) + conc + conc:gender +
                    s(age,by=female)+ s(conc,nrWell) + 
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
@@ -48,6 +50,7 @@ analysis <- gam(events~s(age) + s(conc) + age:gender +
 # s(log(at.risk))
 # gender:log(at.risk)
 
+#conc:nrWell
 
 # AIC
 AIC(analysis)
@@ -107,7 +110,7 @@ for (i in 1:length(prediction.data.original$pred)){
 sd.Pred <- sd(prediction.data.original$pred)
 
 length(prediction.data.original$upper)
-plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))blad$
+plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
 lines(0:maxr,0:maxr, type="l")
 lines(0:maxr+sd.Pred,0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred,0:maxr, type="l", col = "red")
@@ -145,7 +148,8 @@ blad.pred2 <- data.frame(conc = rep(0,to+1),
                         at.risk = 100,
                         gender = rep('Male',to+1),
                         female = rep(0,to+1),
-                        village1 = rep(1,to+1))
+                        village1 = rep(1,to+1),
+                        nrWell = rep(1, to+1))
 
 predict2 <- predict(analysis,newdata = blad.pred2, se.fit=TRUE)
 
