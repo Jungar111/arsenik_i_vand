@@ -151,5 +151,67 @@ ggplot(lun.pred2, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) +
 
 
 ################## USA ANALYSE #####################
+################## DATA INDLÆSNING #####################
+## Lunge data
+USAflun <- read.table("usdth_flun.txt", skip=1, header=FALSE)
+USAmlun <- read.table("usdth_mlun.txt", skip=1, header=FALSE)
+USAlun <- rbind(USAmlun, USAflun)
+age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
+USAlun <- t(rbind(USAlun, age))
+colnames(USAlun) <- c("Male", "Female", "age")
+USAlun <- as.data.frame(USAlun)
+
+## Total data
+USAftot <- read.table("usdth_ftot.txt", skip=1, header=FALSE)
+USAmtot <- read.table("usdth_mtot.txt", skip=1, header=FALSE)
+USAtot <- rbind(USAmtot, USAftot)
+age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
+USAtot <- t(rbind(USAtot, age))
+colnames(USAtot) <- c("Male", "Female", "age")
+USAtotdeaths <- as.data.frame(USAtot)
+
+## Population data
+USAfpop <- read.table("usfemalepyr.txt", skip=1, header=FALSE)
+USAmpop <- read.table("usmalepyr.txt", skip=1, header=FALSE)
+USApop <- rbind(USAmpop, USAfpop)
+age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
+USApop <- t(rbind(USApop, age))
+colnames(USApop) <- c("Male", "Female", "age")
+USApop <- as.data.frame(USApop)
+
+####################### MODEL-TID #########################
+## Spg. til Anders...
+# Hvordan undersøger vi de kritiske grænser for 10ppb or 50ppb? Vi har formået at definere modellen og plotte aldersfordelingerne, men videre er vi ikke kommet?
+## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
+plot(USAlun$age, USAlun$Male, main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths")
+lines(USAlun$age, USAlun$Male)
+
+plot(USAtotdeaths$age, USAtotdeaths$Male, main="Number of deaths: All causes (male)", xlab="Age in years", ylab="Number of deaths")
+lines(USAtotdeaths$age, USAtotdeaths$Male)
+
+plot(USApop$age, USApop$Male, main="Total population of USA (Male)", xlab="Age in years", ylab="Number of people")
+lines(USApop$age, USApop$Male)
 
 
+### Mortality rates etc.
+qlist <- numeric(0)
+hlist <- numeric(0)
+
+for (i in 1:21){
+  histjrn <- USAtotdeaths[i,1]/USApop[i,1]
+  qi <- exp(-histjrn)
+  qlist[i] = qi
+  hlist[i] = histjrn
+  }
+plot(0:20*5, hlist*100, main="Prob. of dying while at age i", xlab="Age", ylab="Probability in %")
+lines(0:20*5, hlist*100)
+
+Slist <- numeric(0)
+for (i in 1:21){
+  Slist[i] <- prod(qlist[1:i])
+}
+plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="age i", ylab="Probability in %")
+lines(0:20*5, Slist*100)
+
+## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
+## qi is the prob of surviving year i when all causes are acting.
