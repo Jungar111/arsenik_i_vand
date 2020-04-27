@@ -146,6 +146,8 @@ for (i in 80:length(exp(predict2$fit))){
 
 s*201783/5822763*100
 
+
+par(mfrow = c(2,1))
 x.temp <- blad$age[blad$group==1 & blad$female==0]
 
 y.temp <- blad$at.risk[blad$group==1 & blad$female==0]
@@ -165,28 +167,26 @@ for (i in 1:12){
 
 plot(y.temp2, type = "l")
 
-y.temp3 <- numeric(61)
-y.temp3[1] <- y.temp[1]
-y.temp3[length(y.temp3)] <- y.temp[length(y.temp)]
-lambda <- 0.5
-for (i in 2:60){
-  y.temp3[i] <- y.temp2[i]*lambda + y.temp2[i-1] * (1 - lambda)/2 + y.temp2[i + 1] * (1 - lambda)/2
+
+AndersSmooth <- function(y1, y2, lambda = 0.5){
+  y3 <- numeric(length(y2))
+  y3[1] <- y1[1]
+  y3[length(y3)] <- y1[length(y1)]
+  for (i in 2:60){
+    y3[i] <- y2[i]*lambda + y2[i-1] * (1 - lambda)/2 + y2[i + 1] * (1 - lambda)/2
+  }
+  
+  return(y3)
 }
 
-plot(y.temp3, type = "l")
-
-y.temp4 <- numeric(61)
-y.temp4[1] <- y.temp[1]
-y.temp4[length(y.temp4)] <- y.temp[length(y.temp)]
-lambda <- 0.5
-for (i in 2:60){
-  y.temp4[i] <- y.temp3[i]*lambda + y.temp3[i-1] * (1 - lambda)/2 + y.temp3[i + 1] * (1 - lambda)/2
+for (i in 1:10){
+  y.temp2 <- AndersSmooth(y.temp, y.temp2, lambda = 0.5)
 }
 
 
-plot(0:60+22.5,y.temp4, type = "l")
+plot(0:60+22.5,y.temp2, type = "l")
 
-z.temp <- (y.temp4 / sum(y.temp4)) * sum(y.temp)
+z.temp <- (y.temp2 / sum(y.temp2)) * sum(y.temp)
 
 
 eventPlot = function(){
