@@ -220,7 +220,6 @@ for (i in 1:21){
   Slist[i] <- prod(qlist[1:i])
 }
 plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
-lines(0:20*5, Slist*100)
 
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
 ## qi is the prob of surviving year i when all causes are acting.
