@@ -150,3 +150,6 @@ ggplot(lun.pred2, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) 
 ggplot(lun.pred2, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
 
+################## USA ANALYSE #####################
+
+
