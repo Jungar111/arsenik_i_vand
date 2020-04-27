@@ -1,5 +1,6 @@
 library("mgcv")
 library("ggplot2")
+library("tibble")
 
 # Frederik wd
 # setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
@@ -15,6 +16,34 @@ setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Se
 
 
 set.seed(69)
+usmblad <- (read.table("usdth_mblad.txt", skip = 1, header = FALSE))
+usfblad <- (read.table("usdth_fblad.txt", skip = 1, header = FALSE))
+usBlad <- (rbind(usfblad,usmblad))
+age <- c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+usBlad <- t(rbind(usBlad,age))
+colnames(usBlad) <- c("Female", "Male", "age")
+usBlad <- as.data.frame(usBlad)
+
+
+length(usmblad)
+
+usmtot <- read.table("usdth_mtot.txt", skip = 1, header = FALSE)
+usftot <- read.table("usdth_ftot.txt", skip = 1, header = FALSE)
+usTotDeath <- rbind(usftot,usmtot)
+age <- c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+usTotDeath <- t(rbind(usTotDeath,age))
+colnames(usTotDeath) <- c("Female", "Male", "age")
+usTotDeath <- as.data.frame(usTotDeath)
+
+usmtotPop <- read.table("usmalepyr.txt", skip = 1, header = FALSE)
+usftotPop <- read.table("usfemalepyr.txt", skip = 1, header = FALSE)
+usTotPop <- rbind(usftotPop,usmtotPop)
+age <- c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+usTotPop <- t(rbind(usTotPop,age))
+colnames(usTotPop) <- c("Female", "Male", "age")
+usTotPop <- as.data.frame(usTotPop)
+
+plot(usTot$age, usTot$Male, type="l")
 
 fblad <- read.table("fblad.sw.dat", header=TRUE)
 mblad <- read.table("mblad.sw.dat", header=TRUE)
@@ -32,15 +61,19 @@ for (i in 1:42){
 
 #fjerner outliers 
 
-blad <- blad[-c(19,160,243,532,741,761,941,954,1033,1047,1069),]
+blad <- blad[-c(126,160,636,761,764,1069),]
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age) + s(conc)  + s(age,nrWell) + conc + conc:gender +
-                  s(age,by=female)+ s(conc,nrWell) + 
+analysis <- gam(events~s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
+                  s(age,by=female) + s(conc,by=village1)+ ti(conc)+te(age,by=female)+t2(age)+s(I(age^2))+
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
+
+#s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
+#  s(age,by=female) + s(conc,by=village1)+ ti(conc)+te(age,by=female)+t2(age)+s(I(age^2))+
+
 # AIC
 AIC(analysis)
 
@@ -55,7 +88,7 @@ prediction.temp<-as.data.frame(predict(analysis,se.fit=T))
 prediction.data<-data.frame(pred=prediction.temp$fit, upper=prediction.temp$fit+ 1.96*prediction.temp$se.fit, lower=prediction.temp$fit-1.96*prediction.temp$se.fit)
 
 prediction.data.original <- exp(prediction.data)
-prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
+# prediction.data.original <- prediction.data.original[order(blad$events, decreasing = TRUE),]
 
 par(mfrow = c(1,1))
 
@@ -75,8 +108,17 @@ plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analys
 
 maxr <- 150
 
+
+blad[analysis$fitted.values>20,]
+
+
+blad[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>6,]
+((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>6]
+analysis$fitted.values[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>6]
+blad[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>6,]
+
 # Laver foreløbig test, tror det her er den rigtige måde at plotte det på
-plot(round(prediction.data.original$pred,2),blad$events[order(blad$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr))
+plot(round(prediction.data.original$pred,2),blad$events, xlim=c(0, maxr), ylim=c(0, maxr))
 lines(0:maxr,0:maxr, type="l")
 
 v = vector()
@@ -158,6 +200,8 @@ y.temp2[1] <- y.temp[1]
 y.temp2[length(y.temp2)] <- y.temp[length(y.temp)]
 k <- 1
 
+length(y.temp)
+
 for (i in 1:12){
   for (j in 1:5){
     k <- k + 1
@@ -168,11 +212,13 @@ for (i in 1:12){
 plot(y.temp2, type = "l")
 
 
+
+
 AndersSmooth <- function(y1, y2, lambda = 0.5){
   y3 <- numeric(length(y2))
   y3[1] <- y1[1]
   y3[length(y3)] <- y1[length(y1)]
-  for (i in 2:60){
+  for (i in 2:(length(y2)-1)){
     y3[i] <- y2[i]*lambda + y2[i-1] * (1 - lambda)/2 + y2[i + 1] * (1 - lambda)/2
   }
   
@@ -200,7 +246,8 @@ eventPlot = function(){
                           at.risk=100,
                           gender = rep("Male", to+1),
                           female = rep(0, to+1),
-                          village1 = rep(1, to+1))
+                          village1 = rep(1, to+1),
+                          nrWell = rep(0, to+1))
   predict <- predict(analysis, newdata = blad.pred, se.fit=TRUE)
   
   blad.pred2 <- data.frame(conc = rep(0, to+1),
@@ -208,7 +255,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Female", to+1),
                            female = rep(1, to+1),
-                           village1 = rep(1, to+1))
+                           village1 = rep(1, to+1),
+                           nrWell = rep(0, to+1))
   predict2 <- predict(analysis, newdata = blad.pred2, se.fit=TRUE)
   
   #Contration = 50 ppb
@@ -217,7 +265,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Male", to+1),
                            female = rep(0, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict3 <- predict(analysis, newdata = blad.pred3, se.fit=TRUE)
   
   blad.pred4 <- data.frame(conc = rep(50, to+1),
@@ -225,7 +274,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Female", to+1),
                            female = rep(1, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict4 <- predict(analysis, newdata = blad.pred4, se.fit=TRUE)
   
   
@@ -235,7 +285,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Male", to+1),
                            female = rep(0, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict5 <- predict(analysis, newdata = blad.pred5, se.fit=TRUE)
   
   blad.pred6 <- data.frame(conc = rep(300, to+1),
@@ -243,7 +294,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Female", to+1),
                            female = rep(1, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict6 <- predict(analysis, newdata = blad.pred6, se.fit=TRUE)
   
   
@@ -253,7 +305,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Male", to+1),
                            female = rep(0, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict7 <- predict(analysis, newdata = blad.pred7, se.fit=TRUE)
   
   blad.pred8 <- data.frame(conc = rep(934, to+1),
@@ -261,7 +314,8 @@ eventPlot = function(){
                            at.risk=100,
                            gender = rep("Female", to+1),
                            female = rep(1, to+1),
-                           village1 = rep(0, to+1))
+                           village1 = rep(0, to+1),
+                           nrWell = rep(10, to+1))
   predict8 <- predict(analysis, newdata = blad.pred8, se.fit=TRUE)
   
   plot(exp(predict$fit), xlim=c(0,to), ylim=c(0,2), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
@@ -275,4 +329,34 @@ eventPlot = function(){
   legend(5, 2, legend=c("Male", "Female", "0 ppb","50 ppb", "300 ppb", "934 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
 }
 eventPlot()
+
+par(mfrow = c(2,1))
+
+x.temp <- usTotPop$age
+
+y.temp <- usTotPop$Male
+
+y.temp2 <- numeric(0)
+
+y.temp2[1] <- y.temp[1]
+y.temp2[length(y.temp2)] <- y.temp[length(y.temp)]
+k <- 1
+
+for (i in 1:20){
+  for (j in 1:5){
+    k <- k + 1
+    y.temp2[k] <- (j/5)*y.temp[i] + (5-j/5) * y.temp[i + 1]
+  }
+}
+
+plot(y.temp2, type = "l")
+
+
+for (i in 1:10){
+  y.temp2 <- AndersSmooth(y.temp, y.temp2, lambda = 0.5)
+}
+
+plot(y.temp2, type = "l")
+z.temp <- (y.temp2 / sum(y.temp2)) * sum(y.temp)
+
 
