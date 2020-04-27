@@ -150,8 +150,7 @@ ggplot(lun.pred2, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) 
 ggplot(lun.pred2, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
 
-################## USA ANALYSE #####################
-################## DATA INDLÆSNING #####################
+################## USA ANALYSE --> DATA INDLÆSNING #####################
 ## Lunge data
 USAflun <- read.table("usdth_flun.txt", skip=1, header=FALSE)
 USAmlun <- read.table("usdth_mlun.txt", skip=1, header=FALSE)
@@ -179,18 +178,28 @@ USApop <- t(rbind(USApop, age))
 colnames(USApop) <- c("Male", "Female", "age")
 USApop <- as.data.frame(USApop)
 
-####################### MODEL-TID #########################
-## Spg. til Anders...
-# Hvordan undersøger vi de kritiske grænser for 10ppb or 50ppb? Vi har formået at definere modellen og plotte aldersfordelingerne, men videre er vi ikke kommet?
+####################### PLOT-TID #########################
 ## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
-plot(USAlun$age, USAlun$Male, main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths")
-lines(USAlun$age, USAlun$Male)
+# Lung cancer deaths
+plot(USAlun$age, (USAlun$Male+USAlun$Female), main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
+lines(USAlun$age, USAlun$Female, col="red")
+lines(USAlun$age, USAlun$Male, col="blue")
+legend("topleft", legend=c("Both", "Male", "Female"),
+       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
-plot(USAtotdeaths$age, USAtotdeaths$Male, main="Number of deaths: All causes (male)", xlab="Age in years", ylab="Number of deaths")
-lines(USAtotdeaths$age, USAtotdeaths$Male)
+# All causes death-plot
+plot(USAtotdeaths$age, (USAtotdeaths$Male+USAtotdeaths$Female), main="Number of deaths: All causes", xlab="Age in years", ylab="Number of deaths", type="l")
+lines(USAtotdeaths$age, USAtotdeaths$Female, col="red")
+lines(USAtotdeaths$age, USAtotdeaths$Male, col="blue")
+legend("topleft", legend=c("Both", "Male", "Female"),
+       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
-plot(USApop$age, USApop$Male, main="Total population of USA (Male)", xlab="Age in years", ylab="Number of people")
-lines(USApop$age, USApop$Male)
+#Population plot
+plot(USApop$age, (USApop$Male+USApop$Female), main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
+lines(USApop$age, USApop$Female, col="red")
+lines(USApop$age, USApop$Male, col="blue")
+legend("topright", legend=c("Both", "Male", "Female"),
+       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
 
 ### Mortality rates etc.
@@ -203,14 +212,14 @@ for (i in 1:21){
   qlist[i] = qi
   hlist[i] = histjrn
   }
-plot(0:20*5, hlist*100, main="Prob. of dying while at age i", xlab="Age", ylab="Probability in %")
-lines(0:20*5, hlist*100)
+plot(0:20*5, hlist*100, main="Prob. of dying while i years old", xlab="Age", ylab="Probability in %", type="l")
+
 
 Slist <- numeric(0)
 for (i in 1:21){
   Slist[i] <- prod(qlist[1:i])
 }
-plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="age i", ylab="Probability in %")
+plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
 lines(0:20*5, Slist*100)
 
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
