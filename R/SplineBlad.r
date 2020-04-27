@@ -24,14 +24,23 @@ fblad$female <- 1
 mblad$female <- 0
 blad <- rbind(fblad,mblad) 
 blad$village1 <- 1*(blad$group == 1)
+blad$nrWell[blad$group == 1] <- 0
+
+for (i in 1:42){
+  blad$nrWell[blad$group == i + 1] <- unique(well$nwell[well$village == i])
+}
+
+#fjerner outliers 
+
+blad <- blad[-c(19,160,243,532,741,761,941,954,1033,1047,1069),]
 
 N <- length(blad$events)
 
-analysis <- gam(events~s(age)+s(log(1+conc))+s(age,by=female) + gender*village1 + s(I(age^2))+ age:gender+
+analysis <- gam(events~s(age) + s(conc)  + s(age,nrWell) + conc + conc:gender +
+                  s(age,by=female)+ s(conc,nrWell) + 
                   offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=blad)
-
 # AIC
 AIC(analysis)
 
@@ -136,6 +145,48 @@ for (i in 80:length(exp(predict2$fit))){
 }
 
 s*201783/5822763*100
+
+x.temp <- blad$age[blad$group==1 & blad$female==0]
+
+y.temp <- blad$at.risk[blad$group==1 & blad$female==0]
+
+y.temp2 <- numeric(0)
+
+y.temp2[1] <- y.temp[1]
+y.temp2[length(y.temp2)] <- y.temp[length(y.temp)]
+k <- 1
+
+for (i in 1:12){
+  for (j in 1:5){
+    k <- k + 1
+    y.temp2[k] <- (j/5)*y.temp[i] + (5-j/5) * y.temp[i + 1]
+  }
+}
+
+plot(y.temp2, type = "l")
+
+y.temp3 <- numeric(61)
+y.temp3[1] <- y.temp[1]
+y.temp3[length(y.temp3)] <- y.temp[length(y.temp)]
+lambda <- 0.5
+for (i in 2:60){
+  y.temp3[i] <- y.temp2[i]*lambda + y.temp2[i-1] * (1 - lambda)/2 + y.temp2[i + 1] * (1 - lambda)/2
+}
+
+plot(y.temp3, type = "l")
+
+y.temp4 <- numeric(61)
+y.temp4[1] <- y.temp[1]
+y.temp4[length(y.temp4)] <- y.temp[length(y.temp)]
+lambda <- 0.5
+for (i in 2:60){
+  y.temp4[i] <- y.temp3[i]*lambda + y.temp3[i-1] * (1 - lambda)/2 + y.temp3[i + 1] * (1 - lambda)/2
+}
+
+
+plot(0:60+22.5,y.temp4, type = "l")
+
+z.temp <- (y.temp4 / sum(y.temp4)) * sum(y.temp)
 
 
 eventPlot = function(){
