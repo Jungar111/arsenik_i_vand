@@ -204,22 +204,64 @@ legend("topright", legend=c("Both", "Male", "Female"),
 
 ### Mortality rates etc.
 qlist <- numeric(0)
-hlist <- numeric(0)
+hslist <- numeric(0)
 
+## hslist er hstjernelist
 for (i in 1:21){
-  histjrn <- USAtotdeaths[i,1]/USApop[i,1]
-  qi <- exp(-histjrn)
+  his <- USAtotdeaths[i,1]/USApop[i,1]
+  hi <- USAlun[i,1]/USApop[i,1]
+  qi <- exp(-his)
   qlist[i] = qi
-  hlist[i] = histjrn
+  hslist[i] = his
+  hlist[i] = hi
   }
-plot(0:20*5, hlist*100, main="Prob. of dying while i years old", xlab="Age", ylab="Probability in %", type="l")
+plot(0:20*5, hslist*100, main="Risk of not surviving through age i", xlab="Age", ylab="Probability in %", type="l")
 
-
+## Slist er det som i teksten henvises som 2A-18
 Slist <- numeric(0)
 for (i in 1:21){
   Slist[i] <- prod(qlist[1:i])
 }
 plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
 
+## Kombi er det som i teksten henvises som 2A-19
+kombi <- numeric(0)
+for (i in 1:21){
+  kombi[i] <- Slist[i]*(1-qlist[i])
+}
+plot(0:20*5, kombi*100, type="l", main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %")
+
+
+## Nu laver vi H (altså IKKE Hs) :D
+plot(0:20*5, hlist*100, main="Risk of not surviving through age i (lung cancer)", xlab="Age", ylab="Probability in %", type="l")
+
+## Nu vil vi kigge på sandsynligheden for at blive x år gammel og at dø ved x år:
+## 2A-20
+kombi1 <- numeric(0)
+for (i in 1:21){
+  kombi1[i] <- (hlist[i]/hslist[i]) * (Slist[i]*(1-qlist[i]))
+}
+plot(0:20*5, kombi1*100, type="l", main="Prob. of dying at age i (lung cancer)", xlab="Age", ylab="Probability in %")
+
+# sammenligning --> Det f.eks interessant at lunc cancer peaker før all causes! Der er en mulig trend at spore.
+plot(0:20*5, kombi*100, type="l", main="Prob. of dying at age i", xlab="Age", ylab="Probability in %", col="blue")
+lines(0:20*5, kombi1*100, type="l", col="red")
+legend("topleft", legend=c("All causes", "Lung cancer"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.8)
+
+
+## 2A-21
+Rlung <- sum(kombi1)
+Rlung
+Rlung / (1 - Slist[21])
+
+
+
+
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
 ## qi is the prob of surviving year i when all causes are acting.
+
+
+## Endnu spørgsmål til anders: Vores data opfører sig super godt!
+## Men de er meget generøse med overlevelsesraterne og dødsraterne
+## etc. op til cirka dobbelt så store som originalt.
