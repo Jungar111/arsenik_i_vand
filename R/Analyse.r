@@ -139,15 +139,15 @@ legend(5, 0.90, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
        col=c("blue", "red", 1, 1, 1), lty=c(1,1,1,2,3), cex=0.8)
 
 ########### Conc plot og age plot ###############
-lun.pred2 <- data.frame(conc = lun$conc,
+lun.pred100 <- data.frame(conc = lun$conc,
                         age = lun$age,
                         pop = lun$at.risk,
                         cases = lun$events,
                         pred.cases = prediction.data.original$pred)
 
-ggplot(lun.pred2, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
+ggplot(lun.pred100, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
-ggplot(lun.pred2, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
+ggplot(lun.pred100, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
 
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
@@ -255,8 +255,19 @@ Rlung <- sum(kombi1)
 Rlung
 Rlung / (1 - Slist[21])
 
-
-
+### Sample test data fra Taiwan population:
+## Predict = 0 ppb (MALE)
+## Predict3 = 448 ppb (MALE)
+## Predict5 = 934 ppb (MALE)
+tester <- predict5$se.fit[seq(1, length(predict5$se.fit), 4)]
+tester
+length(tester)
+TESTER <- 0
+for (i in 1:21){
+  for (k in i-1){
+    TESTER <- TESTER + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i]) * Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
+  }
+}
 
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
 ## qi is the prob of surviving year i when all causes are acting.
@@ -264,4 +275,4 @@ Rlung / (1 - Slist[21])
 
 ## Endnu spørgsmål til anders: Vores data opfører sig super godt!
 ## Men de er meget generøse med overlevelsesraterne og dødsraterne
-## etc. op til cirka dobbelt så store som originalt.
+## etc. --> op til cirka dobbelt så store som originalt.
