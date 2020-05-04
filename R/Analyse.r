@@ -69,9 +69,9 @@ x = vector()
 # lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.02*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.02*i])
+  res <- mean(lun$events[0.04*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.04*i])
   v = c(v, res)
-  x = c(x, 0.02*i)}
+  x = c(x, 0.04*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
@@ -85,7 +85,7 @@ lun.pred <- data.frame(conc = rep(0, to+1),
                        gender = rep("Male", to+1),
                        female = rep(0, to+1),
                        village1 = rep(1, to+1))
-predict <- predict(analysis, newdata = lun.pred, se.fit=TRUE)
+predict1 <- predict(analysis, newdata = lun.pred, se.fit=TRUE)
 
 lun.pred2 <- data.frame(conc = rep(0, to+1),
                         age = 0:to,
@@ -129,7 +129,7 @@ lun.pred6 <- data.frame(conc = rep(934, to+1),
                         village1 = rep(0, to+1))
 predict6 <- predict(analysis, newdata = lun.pred6, se.fit=TRUE)
 
-plot(exp(predict$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Risks at different conc. and ages")
+plot(exp(predict1$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Risks at different conc. and ages")
 lines(exp(predict2$fit), lty=1, col="red")
 lines(exp(predict3$fit), lty=2, col="blue")
 lines(exp(predict4$fit), lty=2, col="red")
@@ -205,6 +205,7 @@ legend("topright", legend=c("Both", "Male", "Female"),
 ### Mortality rates etc.
 qlist <- numeric(0)
 hslist <- numeric(0)
+hlist <- numeric(0)
 
 ## hslist er hstjernelist
 for (i in 1:21){
@@ -219,8 +220,9 @@ plot(0:20*5, hslist*100, main="Risk of not surviving through age i", xlab="Age",
 
 ## Slist er det som i teksten henvises som 2A-18
 Slist <- numeric(0)
-for (i in 1:21){
-  Slist[i] <- prod(qlist[1:i])
+Slist[1] <- 1
+for (i in 2:21){
+  Slist[i] <- prod(qlist[1:(i-1)])
 }
 plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
 
@@ -251,21 +253,22 @@ legend("topleft", legend=c("All causes", "Lung cancer"),
 
 
 ## 2A-21
-Rlung <- sum(kombi1)
+Rlung <- sum((hlist/hslist) * (1 - qlist) * Slist)
 Rlung
+
 Rlung / (1 - Slist[21])
 
-### Sample test data fra Taiwan population:
-## Predict = 0 ppb (MALE)
+### Sample test data fra Taiwan population 2A-22!:
+## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
-tester <- predict5$se.fit[seq(1, length(predict5$se.fit), 4)]
+tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 tester
 length(tester)
 TESTER <- 0
 for (i in 1:21){
   for (k in i-1){
-    TESTER <- TESTER + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i]) * Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
+    TESTER <- TESTER + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
   }
 }
 
@@ -273,6 +276,17 @@ for (i in 1:21){
 ## qi is the prob of surviving year i when all causes are acting.
 
 
+# Village1 = 0 skulle gerne have lidt overdødelighed og
+# village1= 1 skulle gerne ligne USA meget.
+
+# Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
+# God argumentation!
+
 ## Endnu spørgsmål til anders: Vores data opfører sig super godt!
 ## Men de er meget generøse med overlevelsesraterne og dødsraterne
 ## etc. --> op til cirka dobbelt så store som originalt.
+
+exp(-5*36.552/10000)
+-log(0.9819)
+exp(-0.01826581)
+
