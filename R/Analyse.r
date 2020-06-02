@@ -104,6 +104,7 @@ lun.pred3 <- data.frame(conc = rep(448, to+1),
                         village1 = rep(0, to+1))
 predict3 <- predict(analysis, newdata = lun.pred3, se.fit=TRUE)
 
+
 lun.pred4 <- data.frame(conc = rep(448, to+1),
                         age = 0:to,
                         at.risk=100,
@@ -178,7 +179,7 @@ USApop <- t(rbind(USApop, age))
 colnames(USApop) <- c("Male", "Female", "age")
 USApop <- as.data.frame(USApop)
 
-####################### PLOT-TID #########################
+####################### USA PLOT-TID #########################
 ## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
 # Lung cancer deaths
 plot(USAlun$age, (USAlun$Male+USAlun$Female), main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
@@ -271,14 +272,13 @@ Rlung0 / (1 - Slist[21])
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
 tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
-tester
-length(tester)
 Rlunge <- 0
 for (i in 1:21){
   for (k in i-1){
     Rlunge <- Rlunge + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
   }
 }
+Rlunge
 
 ### 2A-23:
 # Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
@@ -299,4 +299,5 @@ exp(-5*36.552/10000)
 exp(-0.01826581)
 
 
-## Taiwan befolkning vs. USA befolkning alders
+
+
