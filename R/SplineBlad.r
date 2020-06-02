@@ -3,10 +3,10 @@ library("ggplot2")
 library("tibble")
 
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -84,7 +84,8 @@ N <- length(blad$events)
 #                data=blad)
 
 
-analysis <- gam(events ~ s(age) + I(sqrt(conc)) + village1 + gender + s(age, by = female) + offset(I(log(at.risk))), family = poisson(link = "log"), data = blad, select = TRUE)
+analysis <- gam(events ~ s(age) + I(sqrt(conc))  + village1  + s(age, by = female) + offset(I(log(at.risk))), 
+                family = poisson(link = "log"), data = blad, select = TRUE)
 
 #s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
 #  s(age,by=female) + s(conc,by=village1)+ ti(conc)+te(age,by=female)+t2(age)+s(I(age^2))+
@@ -95,6 +96,7 @@ AIC(analysis)
 summary(analysis)
 
 prediction.temp$fit
+
 
 # ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
 
@@ -108,7 +110,7 @@ prediction.data.original <- exp(prediction.data)
 par(mfrow = c(1,1))
 
 
-plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group)
+plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values)),col=blad$group, ylab = "Standard Error", xlab="Fitted values")
 
 length(((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))<0])
 
@@ -121,7 +123,7 @@ plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analys
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
-maxr <- 150
+maxr <- 5
 
 
 blad[analysis$fitted.values>20,]
@@ -151,14 +153,20 @@ for (i in 1:length(prediction.data.original$pred)){
   v = c(v,res)
   v.upper = c(v.upper,res.upper)
   v.lower = c(v.lower,res.lower)
-  x = c(x, 0.1*i)
+  x = c(x, 0.1*i-0.05)
 }
 
-plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr))
+plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr),xlab="Index", ylab="Predictions")
 plot(x,v.lower)
 lines(x,v.lower, col = "red")
 lines(prediction.data$upper, type = 'l', col = "red")
 lines(x, v.lower, xlim=c(0, maxr), ylim = c(0,maxr))
+
+
+# Rigtige plot her!!!! 
+datDat <- as.data.frame(cbind(v, x))
+
+ggplot(datDat, aes(x = v, y = x)) + geom_point() + geom_smooth(method = gam) + xlim(0,120) + ylim(-5,120) + xlab("Prediction") + ylab("Events")
 
 
 lines(0:maxr,0:maxr, type="l")
@@ -168,7 +176,7 @@ plot(analysis$residuals)
 
 
 plot(analysis$residuals, ylim=c(-10, 20))
-plot(analysis$fitted.values, analysis$residuals)
+plot(analysis$fitted.values, blad$events)
 
 ggplot(blad, aes(events,conc)) + geom_point() + geom_smooth(method = gam, formula = blad$events~s(blad$age)+s(log(1+blad$conc))+s(blad$age,by=blad$female) + blad$gender*blad$village1 + offset(I(log(blad$at.risk))))
 
@@ -398,5 +406,5 @@ for (i in 1:10){
 
 plot(y.temp2, type = "l")
 z.temp <- (y.temp2 / sum(y.temp2)) * sum(y.temp)
-
+plot(z.temp, type="l")
 
