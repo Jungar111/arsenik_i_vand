@@ -53,14 +53,10 @@ fblad$female <- 1
 mblad$female <- 0
 blad <- rbind(fblad,mblad) 
 blad$village1 <- 1*(blad$group == 1)
-blad$nrWell[blad$group == 1] <- 0
+
 blad$at.risk1 <- blad$at.risk
 blad$at.risk1[blad$village1 == 1] <- 0
 
-
-for (i in 1:42){
-  blad$nrWell[blad$group == i + 1] <- unique(well$nwell[well$village == i])
-}
 
 #fjerner outliers 
 
@@ -84,8 +80,12 @@ N <- length(blad$events)
 #                data=blad)
 
 
+<<<<<<< HEAD
 analysis <- gam(events ~ s(age) + I(sqrt(conc))  + village1  + s(age, by = female) + offset(I(log(at.risk))), 
                 family = poisson(link = "log"), data = blad, select = TRUE)
+=======
+analysis <- gam(events ~ s(age) + I(conc) + village1 + s(age, by = female) + offset(I(log(at.risk))), family = poisson(link = "log"), data = blad, select = TRUE)
+>>>>>>> 4fae60003b712e6193a0a914aa3c7ecf90036bb9
 
 #s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
 #  s(age,by=female) + s(conc,by=village1)+ ti(conc)+te(age,by=female)+t2(age)+s(I(age^2))+
@@ -366,7 +366,7 @@ eventPlot = function(){
                            nrWell = rep(10, to+1))
   predict8 <- predict(analysis, newdata = blad.pred8, se.fit=TRUE)
   
-  plot(exp(predict1$fit), xlim=c(0,to), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
+  plot(exp(predict1$fit), xlim=c(0,to), ylim=c(0,0.5), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Events at different conc. and ages")
   lines(exp(predict2$fit), lty=1, col="red")
   lines(exp(predict3$fit), lty=2, col="blue")
   lines(exp(predict4$fit), lty=2, col="red")
@@ -374,7 +374,7 @@ eventPlot = function(){
   lines(exp(predict6$fit), lty=3, col="red")
   lines(exp(predict7$fit), lty=4, col="blue")
   lines(exp(predict8$fit), lty=4, col="red")
-  legend(5, 1, legend=c("Male", "Female", "0 ppb","10 ppb", "50 ppb", "100 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
+  legend(5, 0.5, legend=c("Male", "Female", "0 ppb","10 ppb", "50 ppb", "100 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
 }
 eventPlot()
 
@@ -406,5 +406,35 @@ for (i in 1:10){
 
 plot(y.temp2, type = "l")
 z.temp <- (y.temp2 / sum(y.temp2)) * sum(y.temp)
+<<<<<<< HEAD
 plot(z.temp, type="l")
+=======
+plot(z.temp, type = "l")
+sum(z.temp)
+
+
+sum(usTotPop$Female) + sum(usTotPop$Male)
+
+
+bladpredUSmale <- data.frame(conc = rep(10, to+1),
+                             age = 0:to,
+                             at.risk=sum(usTotPop$Male),
+                             gender = rep("Male", to+1),
+                             female = rep(0, to+1),
+                             village1 = rep(0, to+1))
+
+bladpredUSfemale <- data.frame(conc = rep(10, to+1),
+                             age = 0:to,
+                             at.risk=sum(usTotPop$Female),
+                             gender = rep("Female", to+1),
+                             female = rep(1, to+1),
+                             village1 = rep(0, to+1))
+
+predictMaleUs <- predict(analysis, newdata = bladpredUSmale, se.fit=TRUE)
+predictFemaleUs <- predict(analysis, newdata = bladpredUSfemale, se.fit=TRUE)
+
+plot(exp(predictMaleUs$fit), type = "l", col = "blue")
+lines(exp(predictFemaleUs$fit), type = "l", col = "red")
+
+>>>>>>> 4fae60003b712e6193a0a914aa3c7ecf90036bb9
 
