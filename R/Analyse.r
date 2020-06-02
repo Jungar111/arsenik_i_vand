@@ -69,9 +69,9 @@ x = vector()
 # lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.04*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.04*i])
+  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
   v = c(v, res)
-  x = c(x, 0.04*i)}
+  x = c(x, 0.01*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
@@ -151,7 +151,7 @@ ggplot(lun.pred100, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1)
 
 
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
-## Lunge data
+## Lung deaths data
 USAflun <- read.table("usdth_flun.txt", skip=1, header=FALSE)
 USAmlun <- read.table("usdth_mlun.txt", skip=1, header=FALSE)
 USAlun <- rbind(USAmlun, USAflun)
@@ -160,7 +160,7 @@ USAlun <- t(rbind(USAlun, age))
 colnames(USAlun) <- c("Male", "Female", "age")
 USAlun <- as.data.frame(USAlun)
 
-## Total data
+## Total deaths data
 USAftot <- read.table("usdth_ftot.txt", skip=1, header=FALSE)
 USAmtot <- read.table("usdth_mtot.txt", skip=1, header=FALSE)
 USAtot <- rbind(USAmtot, USAftot)
@@ -169,7 +169,7 @@ USAtot <- t(rbind(USAtot, age))
 colnames(USAtot) <- c("Male", "Female", "age")
 USAtotdeaths <- as.data.frame(USAtot)
 
-## Population data
+## Total population data
 USAfpop <- read.table("usfemalepyr.txt", skip=1, header=FALSE)
 USAmpop <- read.table("usmalepyr.txt", skip=1, header=FALSE)
 USApop <- rbind(USAmpop, USAfpop)
@@ -195,9 +195,11 @@ legend("topleft", legend=c("Both", "Male", "Female"),
        col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
 #Population plot
-plot(USApop$age, (USApop$Male+USApop$Female), main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
-lines(USApop$age, USApop$Female, col="red")
-lines(USApop$age, USApop$Male, col="blue")
+# Læg mærke til, at y-aksen er divideret med 5 for at gøre op for, at aldersinddelingen er hvert 5. år.
+# Ellers havde der været 5 gange så mange mennesker i USA, som der er.
+plot(USApop$age, (USApop$Male+USApop$Female)/5, main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
+lines(USApop$age, USApop$Female/5, col="red")
+lines(USApop$age, USApop$Male/5, col="blue")
 legend("topright", legend=c("Both", "Male", "Female"),
        col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
@@ -211,7 +213,7 @@ hlist <- numeric(0)
 for (i in 1:21){
   his <- USAtotdeaths[i,1]/USApop[i,1]
   hi <- USAlun[i,1]/USApop[i,1]
-  qi <- exp(-his)
+  qi <- exp(-5*his)
   qlist[i] = qi
   hslist[i] = his
   hlist[i] = hi
@@ -220,11 +222,16 @@ plot(0:20*5, hslist*100, main="Risk of not surviving through age i", xlab="Age",
 
 ## Slist er det som i teksten henvises som 2A-18
 Slist <- numeric(0)
-Slist[1] <- 1
+Slist[1] <- 1  ## Vi begynder at tælle alder i 1 år, derfor er sandsynligheden for at blive 1 år gammel = 1.
 for (i in 2:21){
   Slist[i] <- prod(qlist[1:(i-1)])
 }
 plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
+#### TESTER MED DATAEN FRA RADON --> GOD TENDENS (Y) !
+bibop <- c(1,0.982,0.980,0.978,0.972,0.962,0.952,0.943,0.931,0.915,0.888,0.847,0.788,0.705,0.595,0.461,0.317,0.181,0.071,0.028,0.011,0.004)
+bibop2 <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
+# Hvorfor 0:21*5? Fordi vi ved RADON data skal slutte i aldersintervallet 105.
+lines(0:21*5,bibop*100, type="l", col="red")
 
 ## Kombi er det som i teksten henvises som 2A-19
 kombi <- numeric(0)
@@ -253,40 +260,43 @@ legend("topleft", legend=c("All causes", "Lung cancer"),
 
 
 ## 2A-21
-Rlung <- sum((hlist/hslist) * (1 - qlist) * Slist)
-Rlung
+Rlung0 <- sum((hlist/hslist) * (1 - qlist) * Slist)
+Rlung0
 
-Rlung / (1 - Slist[21])
+Rlung0 / (1 - Slist[21])
 
 ### Sample test data fra Taiwan population 2A-22!:
+## tester er contribution from exposed sample (Taiwan).
 ## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
 tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 tester
 length(tester)
-TESTER <- 0
+Rlunge <- 0
 for (i in 1:21){
   for (k in i-1){
-    TESTER <- TESTER + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
+    Rlunge <- Rlunge + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
   }
 }
+
+### 2A-23:
+# Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
+sum((hlist[i]/hslist[i]) * kombi[i]) * 100
+
 
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
 ## qi is the prob of surviving year i when all causes are acting.
 
-
-# Village1 = 0 skulle gerne have lidt overdødelighed og
-# village1= 1 skulle gerne ligne USA meget.
+# village1 = 0 skulle gerne have lidt overdødelighed og
+# village1 = 1 skulle gerne ligne USA meget.
 
 # Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
 # God argumentation!
-
-## Endnu spørgsmål til anders: Vores data opfører sig super godt!
-## Men de er meget generøse med overlevelsesraterne og dødsraterne
-## etc. --> op til cirka dobbelt så store som originalt.
 
 exp(-5*36.552/10000)
 -log(0.9819)
 exp(-0.01826581)
 
+
+## Taiwan befolkning vs. USA befolkning alders
