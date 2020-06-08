@@ -136,7 +136,7 @@ lines(exp(predict3$fit), lty=2, col="blue")
 lines(exp(predict4$fit), lty=2, col="red")
 lines(exp(predict5$fit), lty=3, col="blue")
 lines(exp(predict6$fit), lty=3, col="red")
-legend(5, 0.90, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
+legend(5, 0.9, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
        col=c("blue", "red", 1, 1, 1), lty=c(1,1,1,2,3), cex=0.8)
 
 ########### Conc plot og age plot ###############
@@ -267,15 +267,15 @@ Rlung0
 Rlung0 / (1 - Slist[21])
 
 ### Sample test data fra Taiwan population 2A-22!:
-## tester er contribution from exposed sample (Taiwan).
+## tester er contribution from exposed sample (Taiwan). Elist == Excess risk profile.
 ## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
 Rlunge <- 0
-tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+Elist <- predict3$se.fit[seq(1, length(predict3$se.fit), 4)] - predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 for (i in 1:21){
   for (k in i-1){
-    Rlunge <- Rlunge + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
+    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
   }
 }
 Rlunge
