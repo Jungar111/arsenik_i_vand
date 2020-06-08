@@ -1,12 +1,15 @@
 library("mgcv")
 library("ggplot2")
 library("tibble")
+library("survival")
+library("gtable")
+library("grid")
 
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -154,21 +157,19 @@ for (i in 1:length(prediction.data.original$pred)){
   x = c(x, 0.1*i-0.05)
 }
 
-points <- prediction.data.original$pred
 
 v2 <- v[!is.nan(v)]
 v1 <- sqrt((abs(v-blad$events))/sqrt(v))[!is.nan(v)]
 x1 <- x[!is.nan(v)]
 
+# confidence interval 
+conf<- cipoisson(v2, time = 1, p = 0.95, method = c("exact", "anscombe"))
 
-plot(x, v)
-lines(x1,v1)
+plot(v2, x1, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index", main="Confidence interval")
+lines(conf[,2], x1, col = "red")
+lines(conf[,1], x1, col = "green")
+lines(0:maxr,0:maxr, type="l")
 
-((points-blad$events)/sqrt(points))
-
-plot(v2, x1, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index")
-lines(v2 + v1*1.96, x1, col = "red")
-lines(v2 - v1*1.96, x1, col = "green")
 
 plot(x,v.lower)
 lines(x,v.lower, col = "red")
@@ -202,7 +203,14 @@ blad.pred <- data.frame(conc = blad$conc,
                         cases = blad$events,
                         pred.cases = prediction.data.original$pred)
 
-ggplot(blad.pred, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
+ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*100), size = 1)  + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
+
+help("scale_y_continuous")
+
+ggplot(blad.pred,aes(x=conc))+geom_density(linetype="dashed")
+ 
+
+
 
 ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
 
