@@ -1,4 +1,5 @@
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
+
 ## bladder deaths data
 USAfblad <- read.table("usdth_fblad.txt", skip=1, header=FALSE)
 USAmblad <- read.table("usdth_mblad.txt", skip=1, header=FALSE)
@@ -26,89 +27,125 @@ USApop <- t(rbind(USApop, age))
 colnames(USApop) <- c("Male", "Female", "age")
 USApop <- as.data.frame(USApop)
 
+(sum(USAblad$Male)+sum(USAblad$Female))/(sum(USApop$Male) + sum(USApop$Female)) * 100
 ####################### PLOT-TID #########################
 ## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
+
 # bladder cancer deaths
-plot(USAblad$age, (USAblad$Male+USAblad$Female), main="Number of deaths: bladder cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
-lines(USAblad$age, USAblad$Female, col="red")
-lines(USAblad$age, USAblad$Male, col="blue")
-legend("topleft", legend=c("Both", "Male", "Female"),
-       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+BladderCancerPlot <- function(){
+  plot(USAblad$age, (USAblad$Male+USAblad$Female), main="Number of deaths: bladder cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
+  lines(USAblad$age, USAblad$Female, col="red")
+  lines(USAblad$age, USAblad$Male, col="blue")
+  legend("topleft", legend=c("Both", "Male", "Female"),
+         col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+}
 
 # All causes death-plot
-plot(USAtotdeaths$age, (USAtotdeaths$Male+USAtotdeaths$Female), main="Number of deaths: All causes", xlab="Age in years", ylab="Number of deaths", type="l")
-lines(USAtotdeaths$age, USAtotdeaths$Female, col="red")
-lines(USAtotdeaths$age, USAtotdeaths$Male, col="blue")
-legend("topleft", legend=c("Both", "Male", "Female"),
-       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+AllCausePlot <- function(){
+  plot(USAtotdeaths$age, (USAtotdeaths$Male+USAtotdeaths$Female), main="Number of deaths: All causes", xlab="Age in years", ylab="Number of deaths", type="l")
+  lines(USAtotdeaths$age, USAtotdeaths$Female, col="red")
+  lines(USAtotdeaths$age, USAtotdeaths$Male, col="blue")
+  legend("topleft", legend=c("Both", "Male", "Female"),
+         col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+}
 
 #Population plot
 # Læg mærke til, at y-aksen er divideret med 5 for at gøre op for, at aldersinddelingen er hvert 5. år.
 # Ellers havde der været 5 gange så mange mennesker i USA, som der er.
-plot(USApop$age, (USApop$Male+USApop$Female)/5, main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
-lines(USApop$age, USApop$Female/5, col="red")
-lines(USApop$age, USApop$Male/5, col="blue")
-legend("topright", legend=c("Both", "Male", "Female"),
-       col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+
+PopPlot <- function(){
+  plot(USApop$age, (USApop$Male+USApop$Female)/5, main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
+  lines(USApop$age, USApop$Female/5, col="red")
+  lines(USApop$age, USApop$Male/5, col="blue")
+  legend("topright", legend=c("Both", "Male", "Female"),
+         col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
+}
 
 
-### Mortality rates etc.
-qlist <- numeric(0)
-hslist <- numeric(0)
-hlist <- numeric(0)
+USAtotdeaths[USAtotdeaths$Male+USAtotdeaths$Female == max(USAtotdeaths$Male+USAtotdeaths$Female),]
+USAblad[USAblad$Male+USAblad$Male == max(USAblad$Male+USAblad$Male),]
+
+
+
+listGenerator <- function(){
+  ### Mortality rates etc.
+  qlist <- numeric(0) 
+  hslist <- numeric(0)
+  hlist <- numeric(0)
+  
+  ## Slist er det som i teksten henvises som 2A-18
+  Slist <- numeric(0)
+  
+  ## Kombi er det som i teksten henvises som 2A-19
+  kombi <- numeric(0)
+  
+  ## 2A-20
+  kombi1 <- numeric(0)
+  
+  for (i in 1:21){
+    his <- USAtotdeaths[i,1]/USApop[i,1]
+    hi <- USAblad[i,1]/USApop[i,1]
+    qi <- exp(-5*his)
+    qlist[i] = qi
+    hslist[i] = his
+    hlist[i] = hi
+  }
+  
+  Slist[1] <- 1  ## Vi begynder at tælle alder i 1 år, derfor er sandsynligheden for at blive 1 år gammel = 1.
+  for (i in 2:21){
+    Slist[i] <- prod(qlist[1:(i-1)])
+  }
+  
+  for (i in 1:21){
+    kombi[i] <- Slist[i]*(1-qlist[i])
+  }
+  
+  for (i in 1:21){
+    kombi1[i] <- (hlist[i]/hslist[i]) * (Slist[i]*(1-qlist[i]))
+  }
+  
+  
+  Rbladder0 <- sum((hlist/hslist) * (1 - qlist) * Slist)
+  
+  ret <- list("his" = his, "hi" = hi, "qi" = qi, "qlist" = qlist, "hslist" = hslist, "hlist" = hlist, "Slist" = Slist, "kombi" = kombi, "kombi1" = kombi1)
+  
+  return(ret)
+}
+
+l <- listGenerator()
 
 ## hslist er hstjernelist
-for (i in 1:21){
-  his <- USAtotdeaths[i,1]/USApop[i,1]
-  hi <- USAblad[i,1]/USApop[i,1]
-  qi <- exp(-5*his)
-  qlist[i] = qi
-  hslist[i] = his
-  hlist[i] = hi
-}
-plot(0:20*5, hslist*100, main="Risk of not surviving through age i", xlab="Age", ylab="Probability in %", type="l")
 
-## Slist er det som i teksten henvises som 2A-18
-Slist <- numeric(0)
-Slist[1] <- 1  ## Vi begynder at tælle alder i 1 år, derfor er sandsynligheden for at blive 1 år gammel = 1.
-for (i in 2:21){
-  Slist[i] <- prod(qlist[1:(i-1)])
-}
-plot(0:20*5, Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
-#### TESTER MED DATAEN FRA RADON --> GOD TENDENS (Y) !
-bibop <- c(1,0.982,0.980,0.978,0.972,0.962,0.952,0.943,0.931,0.915,0.888,0.847,0.788,0.705,0.595,0.461,0.317,0.181,0.071,0.028,0.011,0.004)
-bibop2 <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-# Hvorfor 0:21*5? Fordi vi ved RADON data skal slutte i aldersintervallet 105.
-lines(0:21*5,bibop*100, type="l", col="red")
+plot(0:20*5, l$hslist*100, main="Risk of not surviving through age i", xlab="Age", ylab="Probability in %", type="l")
 
-## Kombi er det som i teksten henvises som 2A-19
-kombi <- numeric(0)
-for (i in 1:21){
-  kombi[i] <- Slist[i]*(1-qlist[i])
-}
-plot(0:20*5, kombi*100, type="l", main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %")
+plot(0:20*5, l$Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
 
+plot(0:20*5, l$kombi*100, type="l", main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %")
 
 ## Nu laver vi H (altså IKKE Hs) :D
-plot(0:20*5, hlist*100, main="Risk of not surviving through age i (bladder cancer)", xlab="Age", ylab="Probability in %", type="l")
+plot(0:20*5, l$hlist*100, main="Risk of not surviving through age i (bladder cancer)", xlab="Age", ylab="Probability in %", type="l")
 
 ## Nu vil vi kigge på sandsynligheden for at blive x år gammel og at dø ved x år:
-## 2A-20
-kombi1 <- numeric(0)
-for (i in 1:21){
-  kombi1[i] <- (hlist[i]/hslist[i]) * (Slist[i]*(1-qlist[i]))
-}
-plot(0:20*5, kombi1*100, type="l", main="Prob. of dying at age i (bladder cancer)", xlab="Age", ylab="Probability in %")
+plot(0:20*5, l$kombi1*100, type="l", main="Prob. of dying at age i (bladder cancer)", xlab="Age", ylab="Probability in %")
+
+sum(l$kombi1)*100
+
+o <- c(0:20*5)
+
+o[l$kombi1 == max(l$kombi1)]
 
 # sammenligning --> Det f.eks interessant at bladc cancer peaker før all causes! Der er en mulig trend at spore.
-plot(0:20*5, kombi*100, type="l", main="Prob. of dying at age i", xlab="Age", ylab="Probability in %", col="blue")
-lines(0:20*5, kombi1*100, type="l", col="red")
-legend("topleft", legend=c("All causes", "bladder cancer"),
-       col=c("blue", "red"), lty=c(1,1), cex=0.8)
+comparisonPlot <- function(){
+  plot(0:20*5, kombi*100, type="l", main="Prob. of dying at age i", xlab="Age", ylab="Probability in %", col="blue")
+  lines(0:20*5, kombi1*100, type="l", col="red")
+  legend("topleft", legend=c("All causes", "bladder cancer"),
+         col=c("blue", "red"), lty=c(1,1), cex=0.8)
+}
+
 
 
 ## 2A-21
-Rbladder0 <- sum((hlist/hslist) * (1 - qlist) * Slist)
+
 Rbladder0
 
 Rbladder0 / (1 - Slist[21])

@@ -4,6 +4,9 @@ library("tibble")
 library("survival")
 library("gtable")
 library("grid")
+library("dplyr")
+library("patchwork")
+library("hrbrthemes")
 
 # Frederik wd
 setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
@@ -203,16 +206,17 @@ blad.pred <- data.frame(conc = blad$conc,
                         cases = blad$events,
                         pred.cases = prediction.data.original$pred)
 
-ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*100), size = 1)  + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
+p1 <- ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop), size = 1)  + geom_point(aes(y = pred.cases/pop), colour = "red", size = 1, alpha = 0.5, pch = 3) + geom_density(linetype = "dashed")
 
-help("scale_y_continuous")
 
-ggplot(blad.pred,aes(x=conc))+geom_density(linetype="dashed")
+p2 <- ggplot(blad.pred,aes(x=conc))+geom_density(color="darkblue", fill="lightblue")
  
+ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*100), size = 1)  + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3) + geom_density(linetype="dashed")
 
 
+ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop), size = 1) + geom_point(aes(y = pred.cases/pop), colour = "red", size = 1, alpha = 0.5, pch = 3) 
 
-ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3)
+ggplot(blad.pred, aes(x = age)) +  geom_density(adjust = 5)
 
 length(analysis$fitted.values[analysis$fitted.values<3])
 
@@ -224,6 +228,8 @@ ggplot(blad.pred[blad.pred$conc > 0 ,], aes(x = conc[conc > 0], colour = rep(col
 
 
 ggplot(blad.pred[blad.pred$conc > 0 ,], aes(x = age, colour = rep(colours,84))) + geom_point(aes(y = cases[conc>0]), size = 1) +  labs(colour = "Age") + geom_point(aes(y = pred.cases[conc>0]), colour = "red", size = 1, alpha = 0.5, pch = 3)
+
+
 
 blad.pred[blad.pred$conc > 0 ,]
 
