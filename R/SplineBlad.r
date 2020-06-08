@@ -3,10 +3,10 @@ library("ggplot2")
 library("tibble")
 
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -80,12 +80,9 @@ N <- length(blad$events)
 #                data=blad)
 
 
-<<<<<<< HEAD
-analysis <- gam(events ~ s(age) + I(sqrt(conc))  + village1  + s(age, by = female) + offset(I(log(at.risk))), 
-                family = poisson(link = "log"), data = blad, select = TRUE)
-=======
+
 analysis <- gam(events ~ s(age) + I(conc) + village1 + s(age, by = female) + offset(I(log(at.risk))), family = poisson(link = "log"), data = blad, select = TRUE)
->>>>>>> 4fae60003b712e6193a0a914aa3c7ecf90036bb9
+
 
 #s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
 #  s(age,by=female) + s(conc,by=village1)+ ti(conc)+te(age,by=female)+t2(age)+s(I(age^2))+
@@ -123,10 +120,11 @@ plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analys
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
-maxr <- 5
+maxr <- 125
 
 
 blad[analysis$fitted.values>20,]
+
 
 
 blad[((blad$events - analysis$fitted.values)/sqrt(analysis$fitted.values))>6,]
@@ -156,7 +154,22 @@ for (i in 1:length(prediction.data.original$pred)){
   x = c(x, 0.1*i-0.05)
 }
 
-plot(x, v, xlim=c(0, maxr), ylim = c(0,maxr),xlab="Index", ylab="Predictions")
+points <- prediction.data.original$pred
+
+v2 <- v[!is.nan(v)]
+v1 <- sqrt((abs(v-blad$events))/sqrt(v))[!is.nan(v)]
+x1 <- x[!is.nan(v)]
+
+
+plot(x, v)
+lines(x1,v1)
+
+((points-blad$events)/sqrt(points))
+
+plot(v2, x1, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index")
+lines(v2 + v1*1.96, x1, col = "red")
+lines(v2 - v1*1.96, x1, col = "green")
+
 plot(x,v.lower)
 lines(x,v.lower, col = "red")
 lines(prediction.data$upper, type = 'l', col = "red")
@@ -406,9 +419,7 @@ for (i in 1:10){
 
 plot(y.temp2, type = "l")
 z.temp <- (y.temp2 / sum(y.temp2)) * sum(y.temp)
-<<<<<<< HEAD
-plot(z.temp, type="l")
-=======
+
 plot(z.temp, type = "l")
 sum(z.temp)
 
@@ -435,6 +446,4 @@ predictFemaleUs <- predict(analysis, newdata = bladpredUSfemale, se.fit=TRUE)
 
 plot(exp(predictMaleUs$fit), type = "l", col = "blue")
 lines(exp(predictFemaleUs$fit), type = "l", col = "red")
-
->>>>>>> 4fae60003b712e6193a0a914aa3c7ecf90036bb9
 
