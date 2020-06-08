@@ -69,9 +69,9 @@ x = vector()
 # lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
 
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
+  res <- mean(lun$events[0.007*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.007*i])
   v = c(v, res)
-  x = c(x, 0.01*i)}
+  x = c(x, 0.007*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
@@ -271,14 +271,15 @@ Rlung0 / (1 - Slist[21])
 ## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
-tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 Rlunge <- 0
+tester <- predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 for (i in 1:21){
   for (k in i-1){
     Rlunge <- Rlunge + (hlist[i]*(1+tester[i]) / hslist[i]+hlist[i]*tester[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*tester[i])) * exp(-sum(hlist[k]*tester[k]))
   }
 }
 Rlunge
+
 
 ### 2A-23:
 # Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
