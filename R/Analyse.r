@@ -279,6 +279,14 @@ rLun <- function(conc, gender){
   } else {
     female <- 1
   }
+  lun.predFunfun <- data.frame(conc = rep(0, to+1),
+                          age = 0:to,
+                          at.risk=100,
+                          gender = rep(gender, to+1),
+                          female = rep(female, to+1),
+                          village1 = rep(0, to+1))
+  
+  predictFunfun <- predict(analysis, newdata = lun.predFunfun, se.fit=TRUE)
   
   lun.predFun <- data.frame(conc = rep(conc, to+1),
                          age = 0:to,
@@ -290,7 +298,7 @@ rLun <- function(conc, gender){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] - predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)]  - predictFunfun$se.fit[seq(1, length(predictFunfun$se.fit), 4)]
   
   for (i in 1:21){
     for (k in i-1){
@@ -334,10 +342,12 @@ sum((hlist[i]/hslist[i]) * kombi[i]) * 100
 # Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
 # God argumentation!
 
-exp(-5*36.552/10000)
--log(0.9819)
-exp(-0.01826581)
-
-
-
+Rlunge <- 0
+Elist <- predict5$se.fit[seq(1, length(predict5$se.fit), 4)] - predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+for (i in 1:21){
+  for (k in i-1){
+    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
+  }
+}
+Rlunge
 
