@@ -107,12 +107,13 @@ listGenerator <- function(){
   
   Rbladder0 <- sum((hlist/hslist) * (1 - qlist) * Slist)
   
-  ret <- list("his" = his, "hi" = hi, "qi" = qi, "qlist" = qlist, "hslist" = hslist, "hlist" = hlist, "Slist" = Slist, "kombi" = kombi, "kombi1" = kombi1)
+  ret <- list("his" = his, "hi" = hi, "qi" = qi, "qlist" = qlist, "hslist" = hslist, "hlist" = hlist, "Slist" = Slist, "kombi" = kombi, "kombi1" = kombi1, "Rbladder0" = Rbladder0)
   
   return(ret)
 }
 
 l <- listGenerator()
+
 
 ## hslist er hstjernelist
 
@@ -245,6 +246,7 @@ listGenerator <- function(gender){
 l <- listGenerator("male")
 lF <- listGenerator("Female")
 
+plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim=c(0,21), ylim=c(0.01, 0.012))
 
 rLun <- function(conc, gender, listCollection){
   
@@ -273,13 +275,17 @@ rLun <- function(conc, gender, listCollection){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / predict1$se.fit[seq(1, length(predict1$se.fit), 4)] / 100
+  
   
   for (i in 1:21){
-    for (k in i-1){
-      Rlunge <- Rlunge + (listCollection$hlist[i]*(1+Elist[i]) / listCollection$hslist[i]+listCollection$hlist[i]*Elist[i])* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*Elist[i])) * exp(-sum(listCollection$hlist[k]*Elist[k]))
+    Rlunge <- Rlunge + (listCollection$hlist[i]*(1+Elist[i]) / (listCollection$hslist[i]+listCollection$hlist[i]*Elist[i]))* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*Elist[i]))
+    for (k in 1:i-1){
+      sum <- exp(-sum(listCollection$hlist[k]*Elist[k]))
     }
+    Rlunge <- Rlunge * sum
   }
+  
   return(Rlunge)
 }
 
@@ -299,6 +305,6 @@ for (gender in genderlis){
   }
 }
 
-plot(conclis, testListMale, col = "blue")
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim = c(0.0065, 0.0075))
 points(conclis, testListFemale, col = "red")
 
