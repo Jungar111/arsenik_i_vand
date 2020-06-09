@@ -461,6 +461,53 @@ predictFemaleUs <- predict(analysis, newdata = bladpredUSfemale, se.fit=TRUE)
 plot(exp(predictMaleUs$fit), type = "l", col = "blue")
 lines(exp(predictFemaleUs$fit), type = "l", col = "red")
 
+listGenerator <- function(){
+  ### Mortality rates etc.
+  qlist <- numeric(0) 
+  hslist <- numeric(0)
+  hlist <- numeric(0)
+  
+  ## Slist er det som i teksten henvises som 2A-18
+  Slist <- numeric(0)
+  
+  ## Kombi er det som i teksten henvises som 2A-19
+  kombi <- numeric(0)
+  
+  ## 2A-20
+  kombi1 <- numeric(0)
+  
+  for (i in 1:21){
+    his <- USAtotdeaths[i,1]/USApop[i,1]
+    hi <- USAblad[i,1]/USApop[i,1]
+    qi <- exp(-5*his)
+    qlist[i] = qi
+    hslist[i] = his
+    hlist[i] = hi
+  }
+  
+  Slist[1] <- 1  ## Vi begynder at tælle alder i 1 år, derfor er sandsynligheden for at blive 1 år gammel = 1.
+  for (i in 2:21){
+    Slist[i] <- prod(qlist[1:(i-1)])
+  }
+  
+  for (i in 1:21){
+    kombi[i] <- Slist[i]*(1-qlist[i])
+  }
+  
+  for (i in 1:21){
+    kombi1[i] <- (hlist[i]/hslist[i]) * (Slist[i]*(1-qlist[i]))
+  }
+  
+  
+  Rbladder0 <- sum((hlist/hslist) * (1 - qlist) * Slist)
+  
+  ret <- list("his" = his, "hi" = hi, "qi" = qi, "qlist" = qlist, "hslist" = hslist, "hlist" = hlist, "Slist" = Slist, "kombi" = kombi, "kombi1" = kombi1)
+  
+  return(ret)
+}
+
+l <- listGenerator()
+
 rLun <- function(conc, gender){
   
   if (gender == "Male"){
