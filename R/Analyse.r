@@ -271,8 +271,9 @@ Rlung0 / (1 - Slist[21])
 ## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
-plot(1, type="n", xlab="", ylab="", xlim=c(0,25), ylim=c(0, 0.03))
-rLun <- function(conc, gender){
+library("viridis")
+plot(1, type="n", xlab="", ylab="", xlim=c(0,21), ylim=c(0.01, 0.012))
+rLun <- function(conc, gender, i){
   
   if (gender == "Male"){
     female <- 0
@@ -303,7 +304,7 @@ rLun <- function(conc, gender){
   predVar <- exp(predictFun$se.fit)
   
   if (conc == 0){
-    Elist <- pred0[seq(1, length(pred0), 4)]/100
+    Elist <- rep(21, 0) # Her er 21 0'er!
   } else {
     Elist <- (predVar[seq(1, length(predVar), 4)] / pred0[seq(1, length(pred0), 4)])/100
   }
@@ -312,29 +313,31 @@ rLun <- function(conc, gender){
   
   
   points(Elist)
+  lines(Elist, col=viridis(22)[i])
   
   
   for (i in 1:21){
     for (k in i-1){
-      Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
+      Rlunge <- Rlunge + ( (hlist[i]*(1+Elist[i])) / (hslist[i]+hlist[i]*Elist[i]) ) * Slist[i] * ( 1-qlist[i] * exp(-hlist[i]*Elist[i]) ) * exp(-sum(hlist[k]*Elist[k]))
     }
   }
   return(Rlunge)
 }
 
-genderlis <- c("Male", "Female")
+genderlis <- c("Male")#, "Female")
 conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
-
+i = 0
 for (gender in genderlis){
   for (conc in conclis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(conc, gender))
+      testListMale <- c(testListMale,rLun(conc, gender, i))
     }else{
-      testListFemale <- c(testListFemale,rLun(conc, gender))
+      testListFemale <- c(testListFemale,rLun(conc, gender, i))
     }
+    i = i + 1
   }
 }
 
