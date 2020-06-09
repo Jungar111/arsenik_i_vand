@@ -190,7 +190,14 @@ exp(-0.01826581)
 #### HEJLØJ ######
 
 
-listGenerator <- function(){
+listGenerator <- function(gender){
+  
+  if (tolower(gender) == "male"){
+    gen = 1
+  } else {
+    gen = 2
+  }
+  
   ### Mortality rates etc.
   qlist <- numeric(0) 
   hslist <- numeric(0)
@@ -206,8 +213,8 @@ listGenerator <- function(){
   kombi1 <- numeric(0)
   
   for (i in 1:21){
-    his <- USAtotdeaths[i,1]/USApop[i,1]
-    hi <- USAblad[i,1]/USApop[i,1]
+    his <- USAtotdeaths[i,gen]/USApop[i,gen]
+    hi <- USAblad[i,1]/USApop[i,gen]
     qi <- exp(-5*his)
     qlist[i] = qi
     hslist[i] = his
@@ -235,9 +242,11 @@ listGenerator <- function(){
   return(ret)
 }
 
-l <- listGenerator()
+l <- listGenerator("male")
+lF <- listGenerator("Female")
 
-rLun <- function(conc, gender){
+
+rLun <- function(conc, gender, listCollection){
   
   if (gender == "Male"){
     female <- 0
@@ -268,7 +277,7 @@ rLun <- function(conc, gender){
   
   for (i in 1:21){
     for (k in i-1){
-      Rlunge <- Rlunge + (l$hlist[i]*(1+Elist[i]) / l$hslist[i]+l$hlist[i]*Elist[i])* l$Slist[i] * (1-l$qlist[i] * exp(-l$hlist[i]*Elist[i])) * exp(-sum(l$hlist[k]*Elist[k]))
+      Rlunge <- Rlunge + (listCollection$hlist[i]*(1+Elist[i]) / listCollection$hslist[i]+listCollection$hlist[i]*Elist[i])* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*Elist[i])) * exp(-sum(listCollection$hlist[k]*Elist[k]))
     }
   }
   return(Rlunge)
@@ -283,9 +292,9 @@ testListFemale <- numeric(0)
 for (gender in genderlis){
   for (conc in conclis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(conc, gender))
+      testListMale <- c(testListMale,rLun(conc, gender, l))
     }else{
-      testListFemale <- c(testListFemale,rLun(conc, gender))
+      testListFemale <- c(testListFemale,rLun(conc, gender, lF))
     }
   }
 }
