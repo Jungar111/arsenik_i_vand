@@ -205,13 +205,13 @@ blad.pred <- data.frame(conc = blad$conc,
                         pop = blad$at.risk,
                         cases = blad$events,
                         pred.cases = prediction.data.original$pred)
+# Density plot 
+p1 <- ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*1/10), size = 1) +geom_point(aes(y = pred.cases/pop*1/10), colour = "red", size = 1, alpha = 0.5, pch = 3)
+p1 <- p1 + scale_y_continuous(sec.axis = sec_axis(~., name = "Density"))
+p1 <- p1 +geom_density(mapping=aes(x=conc))
+p1
 
-p1 <- ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop), size = 1)  + geom_point(aes(y = pred.cases/pop), colour = "red", size = 1, alpha = 0.5, pch = 3) + geom_density(linetype = "dashed")
-
-
-p2 <- ggplot(blad.pred,aes(x=conc))+geom_density(color="darkblue", fill="lightblue")
- 
-ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*100), size = 1)  + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3) + geom_density(linetype="dashed")
+#ggplot(blad.pred, aes(x = conc))+ geom_point(aes(y = cases/pop*100), size = 1)  + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5, pch = 3) + geom_density(linetype="dashed")
 
 
 ggplot(blad.pred, aes(x = age)) + geom_point(aes(y = cases/pop), size = 1) + geom_point(aes(y = pred.cases/pop), colour = "red", size = 1, alpha = 0.5, pch = 3) 
@@ -461,3 +461,58 @@ predictFemaleUs <- predict(analysis, newdata = bladpredUSfemale, se.fit=TRUE)
 plot(exp(predictMaleUs$fit), type = "l", col = "blue")
 lines(exp(predictFemaleUs$fit), type = "l", col = "red")
 
+rLun <- function(conc, gender){
+  
+  if (gender == "Male"){
+    female <- 0
+  } else {
+    female <- 1
+  }
+  
+  lun.pred1 <- data.frame(conc = rep(0, to+1),
+                          age = 0:to,
+                          at.risk=100,
+                          gender = rep(gender, to+1),
+                          female = rep(female, to+1),
+                          village1 = rep(0, to+1))
+  
+  predict1 <- predict(analysis, newdata = lun.pred1, se.fit=TRUE)
+  
+  lun.predFun <- data.frame(conc = rep(conc, to+1),
+                            age = 0:to,
+                            at.risk=100,
+                            gender = rep(gender, to+1),
+                            female = rep(female, to+1),
+                            village1 = rep(0, to+1))
+  
+  predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
+  Rlunge <- 0
+  
+  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+  
+  for (i in 1:21){
+    for (k in i-1){
+      Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
+    }
+  }
+  return(Rlunge)
+}
+
+genderlis <- c("Male", "Female")
+conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
+
+testListMale <- numeric(0)
+testListFemale <- numeric(0)
+
+for (gender in genderlis){
+  for (conc in conclis){
+    if (gender == "Male"){
+      testListMale <- c(testListMale,rLun(conc, gender))
+    }else{
+      testListFemale <- c(testListFemale,rLun(conc, gender))
+    }
+  }
+}
+
+plot(conclis, testListMale, col = "blue")
+points(conclis, testListFemale, col = "red")
