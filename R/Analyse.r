@@ -54,7 +54,7 @@ prediction.data.original <- prediction.data.original[order(lun$events, decreasin
 
 ############### PLOT LUN #################
 
-maxr <- 2
+maxr <- 125
 
 # PLOTTETID
 plot(round(prediction.data.original$pred, digits=2), lun$events[order(lun$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr), xlab="Predicted events", ylab="Actual events")
@@ -271,7 +271,7 @@ Rlung0 / (1 - Slist[21])
 ## Predict1 = 0 ppb (MALE)
 ## Predict3 = 448 ppb (MALE)
 ## Predict5 = 934 ppb (MALE)
-
+plot(1, type="n", xlab="", ylab="", xlim=c(0,25), ylim=c(0, 0.03))
 rLun <- function(conc, gender){
   
   if (gender == "Male"){
@@ -279,12 +279,13 @@ rLun <- function(conc, gender){
   } else {
     female <- 1
   }
+  
   lun.predFunfun <- data.frame(conc = rep(0, to+1),
                           age = 0:to,
                           at.risk=100,
                           gender = rep(gender, to+1),
                           female = rep(female, to+1),
-                          village1 = rep(0, to+1))
+                          village1 = rep(1, to+1))
   
   predictFunfun <- predict(analysis, newdata = lun.predFunfun, se.fit=TRUE)
   
@@ -298,7 +299,20 @@ rLun <- function(conc, gender){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)]  - predictFunfun$se.fit[seq(1, length(predictFunfun$se.fit), 4)]
+  pred0 <- exp(predictFunfun$se.fit)
+  predVar <- exp(predictFun$se.fit)
+  
+  if (conc == 0){
+    Elist <- pred0[seq(1, length(pred0), 4)]/100
+  } else {
+    Elist <- (predVar[seq(1, length(predVar), 4)] / pred0[seq(1, length(pred0), 4)])/100
+  }
+  
+  print(head(Elist))
+  
+  
+  points(Elist)
+  
   
   for (i in 1:21){
     for (k in i-1){
@@ -342,8 +356,17 @@ sum((hlist[i]/hslist[i]) * kombi[i]) * 100
 # Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
 # God argumentation!
 
+lun.predxx <- data.frame(conc = rep(200, to+1),
+                        age = 0:to,
+                        at.risk=100,
+                        gender = rep("Male", to+1),
+                        female = rep(0, to+1),
+                        village1 = rep(0, to+1))
+predictxx <- predict(analysis, newdata = lun.predxx, se.fit=TRUE)
+
+
 Rlunge <- 0
-Elist <- predict5$se.fit[seq(1, length(predict5$se.fit), 4)] - predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
+Elist <- predictxx$se.fit[seq(1, length(predictxx$se.fit), 4)] - predict1$se.fit[seq(1, length(predict1$se.fit), 4)]
 for (i in 1:21){
   for (k in i-1){
     Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
