@@ -1,3 +1,4 @@
+library("viridis")
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
 
 ## bladder deaths data
@@ -117,8 +118,8 @@ listGenerator <- function(gender){
   return(ret)
 }
 
-l <- listGenerator()
-
+l <- listGenerator("male")
+lF <- listGenerator("female")
 
 ## hslist er hstjernelist
 
@@ -201,9 +202,8 @@ exp(-0.01826581)
 l <- listGenerator("male")
 lF <- listGenerator("Female")
 
-plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim=c(0,21), ylim=c(0.01, 0.012))
-
-rLun <- function(conc, gender, listCollection){
+plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim = c(1,21), ylim = c(1, 5.5))
+rLun <- function(conc, gender, colIndex, listCollection){
   
   if (gender == "Male"){
     female <- 0
@@ -230,8 +230,10 @@ rLun <- function(conc, gender, listCollection){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  Elist <- predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / predict1$se.fit[seq(1, length(predict1$se.fit), 4)] / 100
+  Elist <- (predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / 100) / (predict1$se.fit[seq(1, length(predict1$se.fit), 4)] / 100)
   
+  points(Elist, col=viridis(44)[colIndex])
+  lines(Elist, col=viridis(44)[colIndex])
   
   for (i in 1:21){
     Rlunge <- Rlunge + (listCollection$hlist[i]*(1+Elist[i]) / (listCollection$hslist[i]+listCollection$hlist[i]*Elist[i]))* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*Elist[i]))
@@ -249,17 +251,21 @@ conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550,
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
-
+colIndex <- 1
 for (gender in genderlis){
   for (conc in conclis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(conc, gender, l))
+      testListMale <- c(testListMale,rLun(conc, gender, colIndex, l))
     }else{
-      testListFemale <- c(testListFemale,rLun(conc, gender, lF))
+      testListFemale <- c(testListFemale,rLun(conc, gender, colIndex, lF))
     }
+    colIndex <- colIndex + 1
   }
 }
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim = c(0.0065, 0.0075))
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim = c(-0.005, 0.04))
 points(conclis, testListFemale, col = "red")
+lines(conclis, rep(l$Rbladder0, length(conclis)), col = "blue")
+lines(conclis, rep(lF$Rbladder0, length(conclis)), col = "red")
+legend("bottomleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1))
 
