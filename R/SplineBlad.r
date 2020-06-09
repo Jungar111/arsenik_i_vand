@@ -539,7 +539,7 @@ rLun <- function(conc, gender){
   
   for (i in 1:21){
     for (k in i-1){
-      Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
+      Rlunge <- Rlunge + (l$hlist[i]*(1+Elist[i]) / l$hslist[i]+l$hlist[i]*Elist[i])* l$Slist[i] * (1-l$qlist[i] * exp(-l$hlist[i]*Elist[i])) * exp(-sum(l$hlist[k]*Elist[k]))
     }
   }
   return(Rlunge)
@@ -563,3 +563,4 @@ for (gender in genderlis){
 
 plot(conclis, testListMale, col = "blue")
 points(conclis, testListFemale, col = "red")
+
