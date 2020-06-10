@@ -102,22 +102,14 @@ legend(5, 0.9, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
 
 ################## DANMARK ANALYSE --> DATA INDLÆSNING #####################
 ## Lung deaths data
-DKlun <- read.table("danmarkDøde.txt", skip=1, header=FALSE)
-USAmlun <- read.table("usdth_mlun.txt", skip=1, header=FALSE)
-USAlun <- rbind(USAmlun, USAflun)
-age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
-USAlun <- t(rbind(USAlun, age))
-colnames(USAlun) <- c("Male", "Female", "age")
-USAlun <- as.data.frame(USAlun)
+DKlun <- read.table("DanLunge.txt", skip=1, header=FALSE)
+colnames(DKlun) <- c("Age", "Male", "Female")
+DKlun <- as.data.frame(DKlun)
 
 ## Total deaths data
-USAftot <- read.table("usdth_ftot.txt", skip=1, header=FALSE)
-USAmtot <- read.table("usdth_mtot.txt", skip=1, header=FALSE)
-USAtot <- rbind(USAmtot, USAftot)
-age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
-USAtot <- t(rbind(USAtot, age))
-colnames(USAtot) <- c("Male", "Female", "age")
-USAtotdeaths <- as.data.frame(USAtot)
+DKtot <- read.table("DanDød.txt", skip=1, header=FALSE)
+colnames(DKtot) <- c("Age", "Male", "Female")
+DKtot <- as.data.frame(DKtot)
 
 ## Total population data
 USAfpop <- read.table("usfemalepyr.txt", skip=1, header=FALSE)

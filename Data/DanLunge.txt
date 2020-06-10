@@ -1,20 +1,20 @@
-dødsårsag	tid	alder	Mænd	Kvinder	
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	0 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	1-4 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	5-9 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	10-14 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	15-19 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	20-24 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	25-29 år	0	0
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	30-34 år	2	2
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	35-39 år	9	7
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	40-44 år	29	18
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	45-49 år	56	47
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	50-54 år	117	90
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	55-59 år	154	121
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	60-64 år	254	200
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	65-69 år	374	264
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	70-74 år	453	213
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	75-79 år	363	163
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	80-84 år	246	120
-Ondartet svulst i strube, lunge, luftrør og bronkier	1996	85- år	135	70
+Age Male Female
+0	0	0
+1-4	0	0
+5-9	0	0
+10-14	0	0
+15-19	0	0
+20-24	0	0
+25-29	0	0
+30-34	2	2
+35-39	9	7
+40-44	29	18
+45-49	56	47
+50-54	117	90
+55-59	154	121
+60-64	254	200
+65-69	374	264
+70-74	453	213
+75-79	363	163
+80-84	246	120
+85+	135	70
