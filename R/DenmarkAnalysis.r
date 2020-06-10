@@ -111,16 +111,13 @@ DKtot <- read.table("DanDød.txt", skip=1, header=FALSE)
 colnames(DKtot) <- c("Age", "Male", "Female")
 DKtot <- as.data.frame(DKtot)
 
-## Total population data
-USAfpop <- read.table("usfemalepyr.txt", skip=1, header=FALSE)
-USAmpop <- read.table("usmalepyr.txt", skip=1, header=FALSE)
-USApop <- rbind(USAmpop, USAfpop)
-age <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
-USApop <- t(rbind(USApop, age))
-colnames(USApop) <- c("Male", "Female", "age")
-USApop <- as.data.frame(USApop)
+## Total population data  - DENNE POPULATIONSDATA ER FRA 2008 OG IKKE FRA 1996
+# (LIGESOM DØDSDATAEN ER) DET SKAL ÆNDRES SENERE.
+DKpop <- read.table("DanPop.txt", skip=1, header=FALSE)
+colnames(DKpop) <- c("Age", "Male", "Female")
+DKpop <- as.data.frame(DKpop)
 
-####################### USA PLOT-TID #########################
+####################### DANMARK PLOT-TID #########################
 ## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
 # Lung cancer deaths
 plot(USAlun$age, (USAlun$Male+USAlun$Female), main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
