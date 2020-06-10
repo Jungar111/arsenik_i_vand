@@ -204,7 +204,7 @@ lines(USApop$age, USApop$Male/5, col="blue")
 legend("topright", legend=c("Both", "Male", "Female"),
        col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
-######## tester ##########
+######## Den er god nok! ##########
 listGenerator <- function(gender){
   
   if (tolower(gender) == "male"){
@@ -260,7 +260,7 @@ listGenerator <- function(gender){
 m <- listGenerator("Male")
 f <- listGenerator("Female")
 
-# Plot af hslist for male og female. 
+# Plot af hs*list for male og female. 
 plot(0:20*5, f$hslist*100, main="Risk of not surviving through age i (all causes)", xlab="Age", ylab="Probability in %", type="l", col="red")
 lines(0:20*5, m$hslist*100, col="blue")
 legend("topleft", legend=c("Male", "Female"),
@@ -308,7 +308,7 @@ f$Rlung0
 ## Sample test data fra Taiwan population 2A-22!
 ## Elist er contribution from exposed sample (Taiwan). Elist == Excess risk profile.
 library("viridis")
-plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim = c(1,21), ylim = c(1, 5.5))
+plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim = c(1,21), ylim = c(1, 1.05))
 rLun <- function(conc, gender, i, listCollection){
   
   if (gender == "Male"){
@@ -336,10 +336,10 @@ rLun <- function(conc, gender, i, listCollection){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  Elist <- (predictFun$se.fit[seq(1, length(predictFun$se.fit), 4)] / 100) / (predict1$se.fit[seq(1, length(predict1$se.fit), 4)] / 100)
+  Elist <- exp(predictFun$fit[seq(1, length(predictFun$fit), 4)] / 100) / exp(predict1$fit[seq(1, length(predict1$fit), 4)] / 100)
   
   points(Elist)
-  lines(Elist, col=viridis(42)[i])
+  lines(Elist, col=viridis(45)[i])
   
   for (i in 1:21){
     Rlunge <- Rlunge + (listCollection$hlist[i]*(1+Elist[i]) / (listCollection$hslist[i]+listCollection$hlist[i]*Elist[i]))* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*Elist[i]))
@@ -366,7 +366,7 @@ for (gender in genderlis){
     i <- i+1
   }
 }
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim = c(0, 0.3))
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim = c(0, 0.15))
 points(conclis, testListFemale, col = "red")
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
@@ -377,8 +377,7 @@ legend("bottomleft", legend = c("Male", "Female", "Male Baseline", "Female Basel
 ##### NOTER #####
 ### 2A-23:
 # Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
-sum((hlist[i]/hslist[i]) * kombi[i]) * 100
-
+sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
 
 ## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
 ## qi is the prob of surviving year i when all causes are acting.
