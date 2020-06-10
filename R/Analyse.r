@@ -229,7 +229,7 @@ listGenerator <- function(gender){
   
   for (i in 1:21){
     his <- USAtotdeaths[i,gen]/USApop[i,gen]
-    hi <- USAlun[i,1]/USApop[i,gen]
+    hi <- USAlun[i,gen]/USApop[i,gen]
     qi <- exp(-5*his)
     qlist[i] = qi
     hslist[i] = his
