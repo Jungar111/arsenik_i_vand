@@ -26,7 +26,6 @@ p.hat <- sum(lun$events/N)
 
 
 ################ General Additive Model / GLM / Model-definering ###################
-# analysis <- glm(events~ age + I(age^2) + conc + gender*village1, family=poisson(link= "log"), data=lun, offset=log(at.risk))
 analysis <- gam(events~s(age) + s(age,by=female) + s(conc) + gender*village1
                 + offset(I(log(at.risk))),
                 family=poisson(link = "log"),
@@ -308,7 +307,7 @@ f$Rlung0
 ## Sample test data fra Taiwan population 2A-22!
 ## Elist er contribution from exposed sample (Taiwan). Elist == Excess risk profile.
 library("viridis")
-plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim = c(1,21), ylim = c(1, 1.05))
+plot(1, type="n", main="Every line represents a concentration (5-950)\n Purple= low conc., yellow = high conc.", xlab="Age groups (intervals)", ylab="Excess Risk (indicator)", xlim = c(1,21), ylim = c(0.95, 0.98))
 rLun <- function(conc, gender, i, listCollection){
   
   if (gender == "Male"){
@@ -322,7 +321,7 @@ rLun <- function(conc, gender, i, listCollection){
                           at.risk=100,
                           gender = rep(gender, to+1),
                           female = rep(female, to+1),
-                          village1 = rep(1, to+1))
+                          village1 = rep(0, to+1))
   
   predict1 <- predict(analysis, newdata = lun.pred1, se.fit=TRUE)
   
@@ -336,8 +335,9 @@ rLun <- function(conc, gender, i, listCollection){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
+  #analysis$smooth HER FINDER VI VORES EXCESS RISK FORDI VORES EXCESS RISK ER = exp(s(conc)) !!
   Elist <- exp(predictFun$fit[seq(1, length(predictFun$fit), 4)] / 100) / exp(predict1$fit[seq(1, length(predict1$fit), 4)] / 100)
-  
+
   points(Elist)
   lines(Elist, col=viridis(45)[i])
   
