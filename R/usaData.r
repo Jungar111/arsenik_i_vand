@@ -121,25 +121,45 @@ listGenerator <- function(gender){
 l <- listGenerator("male")
 lF <- listGenerator("female")
 
-## hslist er hstjernelist
+# Plot af hs*list for male og female. 
+plot(0:20*5, lF$hslist*100, main="Risk of not surviving through age i (all causes)", xlab="Age", ylab="Probability in %", type="l", col="red")
+lines(0:20*5, l$hslist*100, col="blue")
+legend("topleft", legend=c("Male", "Female"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
-plot(0:20*5, l$hslist*100, main="Risk of not surviving through age i", xlab="Age", ylab="Probability in %", type="l")
+# Plot af hlist for male og female.
+plot(0:20*5, l$hlist*100, main="Risk of not surviving through age i (bladder cancer)", xlab="Age", ylab="Probability in %", type="l", col="blue")
+lines(0:20*5, lF$hlist*100, col="red")
+legend("topleft", legend=c("Male", "Female"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
-plot(0:20*5, l$Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l")
+# Plot af Slist for male og female. 2A-18!
+plot(0:20*5, l$Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l", col="blue")
+lines(0:20*5, lF$Slist*100, col="red")
+legend("topright", legend=c("Male", "Female"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
-plot(0:20*5, l$kombi*100, type="l", main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %")
+# Plot af kombi for male og female. 2A-19!
+plot(0:20*5, lF$kombi*100, main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %", type="l", col="red")
+lines(0:20*5, l$kombi*100, col="blue")
+legend("topleft", legend=c("Male", "Female"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
-## Nu laver vi H (altså IKKE Hs) :D
-plot(0:20*5, l$hlist*100, main="Risk of not surviving through age i (bladder cancer)", xlab="Age", ylab="Probability in %", type="l")
+# Plot af kombi1 for male og female. 2A-20!
+plot(0:20*5, l$kombi1*100, main="Prob. of dying at age i (Bladder cancer)", xlab="Age", ylab="Probability in %", type="l", col="blue")
+lines(0:20*5, lF$kombi1*100, col="red")
+legend("topleft", legend=c("Male", "Female"),
+       col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
-## Nu vil vi kigge på sandsynligheden for at blive x år gammel og at dø ved x år:
-plot(0:20*5, l$kombi1*100, type="l", main="Prob. of dying at age i (bladder cancer)", xlab="Age", ylab="Probability in %")
+# sammenligning --> Det f.eks interessant at lunc cancer peaker før all causes! Der er en mulig trend at spore.
+plot(0:20*5, lF$kombi*100, type="l", main="Prob. of dying at age i", xlab="Age", ylab="Probability in %", col="red")
+lines(0:20*5, lF$kombi1*100, lty=2, col="red")
+lines(0:20*5, l$kombi*100, lty=1, col="blue")
+lines(0:20*5, l$kombi1*100, lty=2, col="blue")
+legend("topleft", legend=c("All causes (female)", "Bladder cancer (female)", "All causes (male)", "Bladder cancer (male)"),
+       col=c("red", "red", "blue", "blue"), lty=c(1,2,1,2), cex=0.9)
 
-sum(l$kombi1)*100
 
-o <- c(0:20*5)
-
-o[l$kombi1 == max(l$kombi1)]
 
 # sammenligning --> Det f.eks interessant at bladc cancer peaker før all causes! Der er en mulig trend at spore.
 comparisonPlot <- function(){
@@ -148,7 +168,6 @@ comparisonPlot <- function(){
   legend("topleft", legend=c("All causes", "bladder cancer"),
          col=c("blue", "red"), lty=c(1,1), cex=0.8)
 }
-
 
 
 ## 2A-21
@@ -197,7 +216,7 @@ exp(-0.01826581)
 #### HEJLØJ ######
 
 
-
+to <- 90
 
 l <- listGenerator("male")
 lF <- listGenerator("Female")
@@ -230,8 +249,8 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
-  points(Elist, col=viridis(44)[colIndex])
-  lines(Elist, col=viridis(44)[colIndex])
+  points(e, col=viridis(44)[colIndex])
+  lines(e, col=viridis(44)[colIndex])
   
   for (i in 1:21){
     Rlunge <- Rlunge + (listCollection$hlist[i]*(1+e) / (listCollection$hslist[i]+listCollection$hlist[i]*e))* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*e))
@@ -268,6 +287,7 @@ for (j in 1:23){
 
 
 par(mfrow = (c(1,1)))
+
 
 plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability")
 points(conclis, testListFemale, col = "red")
