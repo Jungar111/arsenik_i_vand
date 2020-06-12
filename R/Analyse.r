@@ -302,46 +302,6 @@ legend("topleft", legend=c("All causes (female)", "Lung cancer (female)", "All c
 m$Rlung0
 f$Rlung0
 
-test <- predict(analysis, type="terms")
-Elist <- numeric(0)
-for (i in 1:length(test[,6])/2){
-  Elist[i] <- exp(test[i,6])
-}
-Elist <- unique(Elist)
-##### 2A-23, bruges ikke >.< #####
-### 2A-23:
-# Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
-sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
-
-## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
-## qi is the prob of surviving year i when all causes are acting.
-
-# village1 = 0 skulle gerne have lidt overdødelighed og
-# village1 = 1 skulle gerne ligne USA meget.
-
-# Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
-# God argumentation!
-
-lun.predxx <- data.frame(conc = rep(10, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predictxx <- predict(analysis, newdata = lun.predxx, se.fit=TRUE)
-
-
-Rlunge <- 0
-Elist <- predictxx$se.fit[seq(1, length(predict1$se.fit), 4)]
-for (i in 1:21){
-  for (k in i-1){
-    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
-  }
-}
-Rlunge
-
-
-
 ############# Hellig gral plot #2, lifetime prob. and excess risk ############
 rLun <- function(conc, gender, colIndex, listCollection, e){
   
@@ -350,24 +310,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   } else {
     female <- 1
   }
-  
-  lun.pred1 <- data.frame(conc = rep(0, to+1),
-                          age = 0:to,
-                          at.risk=100,
-                          gender = rep(gender, to+1),
-                          female = rep(female, to+1),
-                          village1 = rep(1, to+1))
-  
-  predict1 <- predict(analysis, newdata = lun.pred1, se.fit=TRUE)
-  
-  lun.predFun <- data.frame(conc = rep(conc, to+1),
-                            age = 0:to,
-                            at.risk=100,
-                            gender = rep(gender, to+1),
-                            female = rep(female, to+1),
-                            village1 = rep(0, to+1))
-  
-  predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
+
   Rlunge <- 0
   
   for (i in 1:21){
@@ -385,7 +328,12 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 genderlis <- c("Male", "Female")
 conclis <- unique(lun[,2])
 
-EL <- Elist
+test <- predict(analysis, type="terms")
+Elist <- numeric(0)
+for (i in 1:length(test[,6])/2){
+  Elist[i] <- exp(test[i,6])
+}
+EL <- unique(Elist)
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
@@ -409,5 +357,36 @@ points(conclis, testListFemale, col = "red")
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1), cex=0.7)
+#
+
+##### 2A-23, bruges ikke >.< #####
+### 2A-23:
+# Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
+sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
+
+## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
+## qi is the prob of surviving year i when all causes are acting.
+
+# village1 = 0 skulle gerne have lidt overdødelighed og
+# village1 = 1 skulle gerne ligne USA meget.
+
+# Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
+# God argumentation!
+
+lun.predxx <- data.frame(conc = rep(10, to+1),
+                         age = 0:to,
+                         at.risk=100,
+                         gender = rep("Male", to+1),
+                         female = rep(0, to+1),
+                         village1 = rep(0, to+1))
+predictxx <- predict(analysis, newdata = lun.predxx, se.fit=TRUE)
 
 
+Rlunge <- 0
+Elist <- predictxx$se.fit[seq(1, length(predict1$se.fit), 4)]
+for (i in 1:21){
+  for (k in i-1){
+    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
+  }
+}
+Rlunge
