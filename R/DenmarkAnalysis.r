@@ -27,7 +27,7 @@ p.hat <- sum(lun$events/N)
 
 ################ General Additive Model / GLM / Model-definering ###################
 # analysis <- glm(events~ age + I(age^2) + conc + gender*village1, family=poisson(link= "log"), data=lun, offset=log(at.risk))
-analysis <- gam(events~s(age) + s(age,by=female) + s(conc) + gender*village1
+analysis <- gam(events~s(age) + s(age,by=female) + I(conc) + gender*village1
                 + offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=lun)
@@ -262,21 +262,17 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   return(Rlunge)
 }
 
-genderlis <- c("Male", "Female")
-conclis <- unique(lun[,2])
 
-test <- predict(analysis, type="terms")
-Elist <- numeric(0)
-for (i in 1:length(test[,6])/2){
-  Elist[i] <- exp(test[i,6])
-}
-EL <- unique(Elist)
+
+genderlis <- c("Male", "Female")
+conclis <- c(0,5,10,50, seq(50, 900, by = 50))
+EL <- exp(0.0015057*conclis) - 1
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
 colIndex <- 1
 
-for (j in 1:38){
+for (j in 1:length(conclis)){
   e <- EL[j]
   for (gender in genderlis){
     if (gender == "Male"){
@@ -289,11 +285,13 @@ for (j in 1:38){
 }
 
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.21))
-points(conclis, testListFemale, col = "red")
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
+points(conclis, testListFemale, col = "red", pch=20)
+lines(conclis, testListMale, col="blue", lty=3)
+lines(conclis, testListFemale, col="red", lty=3)
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
-legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1), cex=0.7)
+legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
 #
 
 ##### NOTER #####
