@@ -250,23 +250,6 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
     female <- 1
   }
   
-  lun.pred1 <- data.frame(conc = rep(0, to+1),
-                          age = 0:to,
-                          at.risk=100,
-                          gender = rep(gender, to+1),
-                          female = rep(female, to+1),
-                          village1 = rep(1, to+1))
-  
-  predict1 <- predict(analysis, newdata = lun.pred1, se.fit=TRUE)
-  
-  lun.predFun <- data.frame(conc = rep(conc, to+1),
-                            age = 0:to,
-                            at.risk=100,
-                            gender = rep(gender, to+1),
-                            female = rep(female, to+1),
-                            village1 = rep(0, to+1))
-  
-  predictFun <- predict(analysis, newdata = lun.predFun, se.fit=TRUE)
   Rlunge <- 0
   
   for (i in 1:21){
@@ -278,8 +261,6 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   }
   return(Rlunge)
 }
-
-
 
 genderlis <- c("Male", "Female")
 conclis <- unique(lun[,2])
