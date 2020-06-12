@@ -284,8 +284,12 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 genderlis <- c("Male", "Female")
 conclis <- unique(lun[,2])
 
-
-EL <- Elist
+test <- predict(analysis, type="terms")
+Elist <- numeric(0)
+for (i in 1:length(test[,6])/2){
+  Elist[i] <- exp(test[i,6])
+}
+EL <- unique(Elist)
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
@@ -309,6 +313,7 @@ points(conclis, testListFemale, col = "red")
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1), cex=0.7)
+#
 
 ##### NOTER #####
 ### 2A-23:
