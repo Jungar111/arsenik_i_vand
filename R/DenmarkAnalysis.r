@@ -34,72 +34,6 @@ analysis <- gam(events~s(age) + s(age,by=female) + I(conc) + gender*village1
 summary(analysis)
 AIC(analysis)
 
-
-
-###################### RISK VS AGE PLOT - DEN HELLIGE GRAL #########################
-to <- 82.5
-lun.pred <- data.frame(conc = rep(0, to+1),
-                       age = 0:to,
-                       at.risk=100,
-                       gender = rep("Male", to+1),
-                       female = rep(0, to+1),
-                       village1 = rep(1, to+1))
-predict1 <- predict(analysis, newdata = lun.pred, se.fit=TRUE)
-
-lun.pred2 <- data.frame(conc = rep(0, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(1, to+1))
-predict2 <- predict(analysis, newdata = lun.pred2, se.fit=TRUE)
-
-##### Concentration = 448 ppb
-lun.pred3 <- data.frame(conc = rep(448, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict3 <- predict(analysis, newdata = lun.pred3, se.fit=TRUE)
-
-
-lun.pred4 <- data.frame(conc = rep(448, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict4 <- predict(analysis, newdata = lun.pred4, se.fit=TRUE)
-
-####### Concentration = 934 ppb
-lun.pred5 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict5 <- predict(analysis, newdata = lun.pred5, se.fit=TRUE)
-
-lun.pred6 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict6 <- predict(analysis, newdata = lun.pred6, se.fit=TRUE)
-
-plot(exp(predict1$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Risks at different conc. and ages")
-lines(exp(predict2$fit), lty=1, col="red")
-lines(exp(predict3$fit), lty=2, col="blue")
-lines(exp(predict4$fit), lty=2, col="red")
-lines(exp(predict5$fit), lty=3, col="blue")
-lines(exp(predict6$fit), lty=3, col="red")
-legend(5, 0.9, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
-       col=c("blue", "red", 1, 1, 1), lty=c(1,1,1,2,3), cex=0.8)
-
-
-
 ################## DANMARK ANALYSE --> DATA INDLÆSNING #####################
 ## Lung deaths data
 DKlun <- read.table("DanLunge.txt", skip=1, header=FALSE)
@@ -242,6 +176,7 @@ m$Rlung0
 f$Rlung0
 
 ############# Hellig gral plot #2, lifetime prob. and excess risk ############
+# Her defineres funktionen rLun, der trækker information ud.
 rLun <- function(conc, gender, colIndex, listCollection, e){
   
   if (gender == "Male"){
@@ -261,8 +196,6 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   }
   return(Rlunge)
 }
-
-
 
 genderlis <- c("Male", "Female")
 conclis <- c(0,5,10,50, seq(50, 900, by = 50))
