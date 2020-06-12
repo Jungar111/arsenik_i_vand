@@ -37,18 +37,18 @@ AIC(analysis)
 ################## DANMARK ANALYSE --> DATA INDLÆSNING #####################
 ## Lung deaths data
 DKlun <- read.table("DanLunge.txt", skip=1, header=FALSE)
-colnames(DKlun) <- c("Age", "Male", "Female")
+colnames(DKlun) <- c("Male", "Female", "Age")
 DKlun <- as.data.frame(DKlun)
 
 ## Total deaths data
 DKtot <- read.table("DanDød.txt", skip=1, header=FALSE)
-colnames(DKtot) <- c("Age", "Male", "Female")
+colnames(DKtot) <- c("Male", "Female", "Age")
 DKtot <- as.data.frame(DKtot)
 
 ## Total population data  - DENNE POPULATIONSDATA ER FRA 2008 OG IKKE FRA 1996
 # (LIGESOM DØDSDATAEN ER) DET SKAL ÆNDRES SENERE.
 DKpop <- read.table("DanPop.txt", skip=1, header=FALSE)
-colnames(DKpop) <- c("Age", "Male", "Female")
+colnames(DKpop) <- c("Male", "Female", "Age")
 DKpop <- as.data.frame(DKpop)
 
 ####################### DANMARK PLOT-TID #########################
@@ -80,9 +80,9 @@ legend("topright", legend=c("Both", "Male", "Female"),
 listGenerator <- function(gender){
   
   if (tolower(gender) == "male"){
-    gen = 2
+    gen = 1
   } else {
-    gen = 3
+    gen = 2
   }
   
   ### Mortality rates etc.
