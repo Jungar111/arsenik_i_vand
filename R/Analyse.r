@@ -326,7 +326,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 
 
 genderlis <- c("Male", "Female")
-conclis <- c(0,5,10,50, seq(50, 900, by = 50))
+conclis <- c(0,5,10,25, seq(50, 900, by = 50))
 EL <- exp(0.0015057*conclis) - 1
 
 testListMale <- numeric(0)
