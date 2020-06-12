@@ -187,7 +187,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   
   Rlunge <- 0
   
-  for (i in 1:21){
+  for (i in 1:19){
     Rlunge <- Rlunge + (listCollection$hlist[i]*(1+e) / (listCollection$hslist[i]+listCollection$hlist[i]*e))* listCollection$Slist[i] * (1-listCollection$qlist[i] * exp(-listCollection$hlist[i]*e))
     for (k in 1:i-1){
       sum <- exp(-sum(listCollection$hlist[k]*e))
@@ -259,3 +259,4 @@ for (i in 1:19){
   }
 }
 Rlunge
+
