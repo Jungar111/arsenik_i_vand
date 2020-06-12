@@ -26,7 +26,7 @@ p.hat <- sum(lun$events/N)
 
 
 ################ General Additive Model / GLM / Model-definering ###################
-analysis <- gam(events~s(age) + s(age,by=female) + s(conc) + gender*village1
+analysis <- gam(events~s(age) + s(age,by=female) + I(conc) + gender*village1
                 + offset(I(log(at.risk))),
                 family=poisson(link = "log"),
                 data=lun)
@@ -35,8 +35,8 @@ AIC(analysis)
 
 # RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
 par(mfrow=c(2,1))
-plot(analysis$residuals, col=lun$group, main = "Indbygget R funktion")
-plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Manuel beregning")
+plot(analysis$residuals, col=lun$group,  main = "Residual analysis (R-function)")
+plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Standardized residual analysis (manual)", xlab="Observation index")
 par(mfrow=c(1,1))
 ## Kan det forsvares dette plot? Og hvor mange er ude for vores konfidensinterval ud af 1118?
 length(((lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values))[(lun$events - analysis$fitted.values)/sqrt(analysis$fitted.values) > 4])
@@ -140,10 +140,10 @@ legend(5, 0.9, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
 
 ########### gg plots (bruges ikke) ###############
 lun.pred100 <- data.frame(conc = lun$conc,
-                        age = lun$age,
-                        pop = lun$at.risk,
-                        cases = lun$events,
-                        pred.cases = prediction.data.original$pred)
+                          age = lun$age,
+                          pop = lun$at.risk,
+                          cases = lun$events,
+                          pred.cases = prediction.data.original$pred)
 
 ggplot(lun.pred100, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
@@ -310,7 +310,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   } else {
     female <- 1
   }
-
+  
   Rlunge <- 0
   
   for (i in 1:21){
@@ -326,20 +326,14 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 
 
 genderlis <- c("Male", "Female")
-conclis <- unique(lun[,2])
-
-test <- predict(analysis, type="terms")
-Elist <- numeric(0)
-for (i in 1:length(test[,6])/2){
-  Elist[i] <- exp(test[i,6])
-}
-EL <- unique(Elist)
+conclis <- c(0,5,10,50, seq(50, 900, by = 50))
+EL <- exp(0.0015057*conclis) - 1
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
 colIndex <- 1
 
-for (j in 1:38){
+for (j in 1:length(conclis)){
   e <- EL[j]
   for (gender in genderlis){
     if (gender == "Male"){
@@ -352,11 +346,13 @@ for (j in 1:38){
 }
 
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.21))
-points(conclis, testListFemale, col = "red")
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
+points(conclis, testListFemale, col = "red", pch=20)
+lines(conclis, testListMale, col="blue", lty=3)
+lines(conclis, testListFemale, col="red", lty=3)
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
-legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1), cex=0.7)
+legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
 #
 
 ##### 2A-23, bruges ikke >.< #####
