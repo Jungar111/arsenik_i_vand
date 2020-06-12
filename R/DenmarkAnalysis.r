@@ -199,6 +199,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 
 genderlis <- c("Male", "Female")
 conclis <- c(0,5,10,50, seq(50, 900, by = 50))
+# Tallet o.0015057 kommer fra summary(analysis) og er koefficient-estimatet til conc.
 EL <- exp(0.0015057*conclis) - 1
 
 testListMale <- numeric(0)
@@ -209,9 +210,9 @@ for (j in 1:length(conclis)){
   e <- EL[j]
   for (gender in genderlis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(1, gender, colIndex, m, e))
+      testListMale <- c(testListMale, rLun(1, gender, colIndex, m, e))
     }else{
-      testListFemale <- c(testListFemale,rLun(1, gender, colIndex, f, e))
+      testListFemale <- c(testListFemale, rLun(1, gender, colIndex, f, e))
     }
     colIndex <- colIndex + 1
   }
