@@ -304,6 +304,12 @@ f$Rlung0
 
 
 ################## HVOR MEGET ØGES DIN LIFETIME RISK IFT. CONC? ########################
+test <- predict(analysis, type="terms")
+Elist <- numeric(0)
+for (i in 1:length(test[,6])/2){
+  Elist[i] <- exp(test[i,6])
+}
+Elist <- unique(Elist)
 ## Sample test data fra Taiwan population 2A-22!
 ## Elist er contribution from exposed sample (Taiwan). Elist == Excess risk profile.
 library("viridis")
