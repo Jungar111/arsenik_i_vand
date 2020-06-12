@@ -455,33 +455,31 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 
 
 genderlis <- c("Male", "Female")
-conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
+conclis <- unique(lun[,2])
 
-EL <- 
+EL <- Elist
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
 colIndex <- 1
 
-for (j in 1:23){
+for (j in 1:38){
   e <- EL[j]
   for (gender in genderlis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(1, gender, colIndex, l, e))
+      testListMale <- c(testListMale,rLun(1, gender, colIndex, m, e))
     }else{
-      testListFemale <- c(testListFemale,rLun(1, gender, colIndex, lF, e))
+      testListFemale <- c(testListFemale,rLun(1, gender, colIndex, f, e))
     }
     colIndex <- colIndex + 1
   }
 }
 
 
-par(mfrow = (c(1,1)))
-
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability")
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.21))
 points(conclis, testListFemale, col = "red")
-lines(conclis, rep(l$Rbladder0, length(conclis)), col = "blue")
-lines(conclis, rep(lF$Rbladder0, length(conclis)), col = "red")
-legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1))
+lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
+lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
+legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1), cex=0.7)
 
 
