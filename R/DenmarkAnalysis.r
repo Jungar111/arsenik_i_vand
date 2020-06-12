@@ -219,7 +219,7 @@ for (j in 1:length(conclis)){
 }
 
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile (DK)", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
 points(conclis, testListFemale, col = "red", pch=20)
 lines(conclis, testListMale, col="blue", lty=3)
 lines(conclis, testListFemale, col="red", lty=3)
