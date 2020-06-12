@@ -302,14 +302,14 @@ legend("topleft", legend=c("All causes (female)", "Lung cancer (female)", "All c
 m$Rlung0
 f$Rlung0
 
-
-################## HVOR MEGET ØGES DIN LIFETIME RISK IFT. CONC? ########################
 test <- predict(analysis, type="terms")
 Elist <- numeric(0)
 for (i in 1:length(test[,6])/2){
   Elist[i] <- exp(test[i,6])
 }
 Elist <- unique(Elist)
+################## HVOR MEGET ØGES DIN LIFETIME RISK IFT. CONC? ########################
+
 ## Sample test data fra Taiwan population 2A-22!
 ## Elist er contribution from exposed sample (Taiwan). Elist == Excess risk profile.
 library("viridis")
@@ -380,7 +380,7 @@ legend("bottomleft", legend = c("Male", "Female", "Male Baseline", "Female Basel
 #
 
 
-##### NOTER #####
+##### 2A-23, bruges ikke >.< #####
 ### 2A-23:
 # Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
 sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
@@ -411,4 +411,10 @@ for (i in 1:21){
   }
 }
 Rlunge
+
+
+
+############# TESTER ############
+
+
 
