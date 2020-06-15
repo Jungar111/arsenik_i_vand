@@ -51,105 +51,6 @@ prediction.data.original <- exp(prediction.data)
 prediction.data.original <- prediction.data.original[order(lun$events, decreasing = TRUE), ]
 
 
-############### PLOT LUN #################
-
-maxr <- 2
-
-# PLOTTETID
-plot(round(prediction.data.original$pred, digits=2), lun$events[order(lun$events, decreasing = TRUE)], xlim=c(0, maxr), ylim=c(0, maxr), xlab="Predicted events", ylab="Actual events")
-lines(0:maxr, 0:maxr, type="l")
-sd.Pred <- sd(prediction.data.original$pred[0:maxr])
-lines(0:maxr+sd.Pred, 0:maxr, type="l", col = "red")
-lines(0:maxr-sd.Pred, 0:maxr, type="l", col = "red")
-
-v = vector()
-x = vector()
-
-# lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
-
-for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.007*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.007*i])
-  v = c(v, res)
-  x = c(x, 0.007*i)}
-
-plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
-lines(0:maxr,0:maxr, type="l")
-
-
-###################### RISK VS AGE PLOT - DEN HELLIGE GRAL #########################
-to <- 82.5
-lun.pred <- data.frame(conc = rep(0, to+1),
-                       age = 0:to,
-                       at.risk=100,
-                       gender = rep("Male", to+1),
-                       female = rep(0, to+1),
-                       village1 = rep(1, to+1))
-predict1 <- predict(analysis, newdata = lun.pred, se.fit=TRUE)
-
-lun.pred2 <- data.frame(conc = rep(0, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(1, to+1))
-predict2 <- predict(analysis, newdata = lun.pred2, se.fit=TRUE)
-
-##### Concentration = 448 ppb
-lun.pred3 <- data.frame(conc = rep(448, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict3 <- predict(analysis, newdata = lun.pred3, se.fit=TRUE)
-
-
-lun.pred4 <- data.frame(conc = rep(448, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict4 <- predict(analysis, newdata = lun.pred4, se.fit=TRUE)
-
-####### Concentration = 934 ppb
-lun.pred5 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Male", to+1),
-                        female = rep(0, to+1),
-                        village1 = rep(0, to+1))
-predict5 <- predict(analysis, newdata = lun.pred5, se.fit=TRUE)
-
-lun.pred6 <- data.frame(conc = rep(934, to+1),
-                        age = 0:to,
-                        at.risk=100,
-                        gender = rep("Female", to+1),
-                        female = rep(1, to+1),
-                        village1 = rep(0, to+1))
-predict6 <- predict(analysis, newdata = lun.pred6, se.fit=TRUE)
-
-plot(exp(predict1$fit), xlim=c(0,82.5), ylim=c(0,1), type = "l", col="blue", xlab = "Age in years", ylab = "Risk of dying from lung cancer in %", main="Risks at different conc. and ages")
-lines(exp(predict2$fit), lty=1, col="red")
-lines(exp(predict3$fit), lty=2, col="blue")
-lines(exp(predict4$fit), lty=2, col="red")
-lines(exp(predict5$fit), lty=3, col="blue")
-lines(exp(predict6$fit), lty=3, col="red")
-legend(5, 0.9, legend=c("Male", "Female", "0 ppb", "448 ppb", "934 ppb"),
-       col=c("blue", "red", 1, 1, 1), lty=c(1,1,1,2,3), cex=0.8)
-
-########### gg plots (bruges ikke) ###############
-lun.pred100 <- data.frame(conc = lun$conc,
-                          age = lun$age,
-                          pop = lun$at.risk,
-                          cases = lun$events,
-                          pred.cases = prediction.data.original$pred)
-
-ggplot(lun.pred100, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
-
-ggplot(lun.pred100, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
-
-
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
 ## Lung deaths data
 USAflun <- read.table("usdth_flun.txt", skip=1, header=FALSE)
@@ -303,6 +204,7 @@ m$Rlung0
 f$Rlung0
 
 ############# Hellig gral plot #2, lifetime prob. and excess risk ############
+# Her defineres funktionen rLun, der trækker information ud.
 rLun <- function(conc, gender, colIndex, listCollection, e){
   
   if (gender == "Male"){
@@ -323,10 +225,9 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
   return(Rlunge)
 }
 
-
-
 genderlis <- c("Male", "Female")
-conclis <- c(0,5,10,50, seq(50, 900, by = 50))
+conclis <- c(0,5,10,25, seq(50, 900, by = 50))
+# Tallet o.0015057 kommer fra summary(analysis) og er koefficient-estimatet til conc.
 EL <- exp(0.0015057*conclis) - 1
 
 testListMale <- numeric(0)
@@ -337,16 +238,17 @@ for (j in 1:length(conclis)){
   e <- EL[j]
   for (gender in genderlis){
     if (gender == "Male"){
-      testListMale <- c(testListMale,rLun(1, gender, colIndex, m, e))
+      testListMale <- c(testListMale, rLun(1, gender, colIndex, m, e))
     }else{
-      testListFemale <- c(testListFemale,rLun(1, gender, colIndex, f, e))
+      testListFemale <- c(testListFemale, rLun(1, gender, colIndex, f, e))
     }
     colIndex <- colIndex + 1
   }
 }
+plot(0:21*43,EL, type="l", main="Excess Risk Profile", xlab="Concentration in ppb", ylab="Excess risk factor")
 
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile (USA)", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
 points(conclis, testListFemale, col = "red", pch=20)
 lines(conclis, testListMale, col="blue", lty=3)
 lines(conclis, testListFemale, col="red", lty=3)
@@ -354,35 +256,3 @@ lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
 #
-
-##### 2A-23, bruges ikke >.< #####
-### 2A-23:
-# Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
-sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
-
-## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
-## qi is the prob of surviving year i when all causes are acting.
-
-# village1 = 0 skulle gerne have lidt overdødelighed og
-# village1 = 1 skulle gerne ligne USA meget.
-
-# Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
-# God argumentation!
-
-lun.predxx <- data.frame(conc = rep(10, to+1),
-                         age = 0:to,
-                         at.risk=100,
-                         gender = rep("Male", to+1),
-                         female = rep(0, to+1),
-                         village1 = rep(0, to+1))
-predictxx <- predict(analysis, newdata = lun.predxx, se.fit=TRUE)
-
-
-Rlunge <- 0
-Elist <- predictxx$se.fit[seq(1, length(predict1$se.fit), 4)]
-for (i in 1:21){
-  for (k in i-1){
-    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
-  }
-}
-Rlunge
