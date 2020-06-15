@@ -217,7 +217,8 @@ for (j in 1:length(conclis)){
     colIndex <- colIndex + 1
   }
 }
-plot(0:21*43,EL, type="l", main="Excess Risk Profile", xlab="Concentration in ppb", ylab="Excess risk factor", col="darkblue")
+
+plot(0:21*(934/21), EL, type="l", main="Excess Risk Profile", xlab="Concentration in ppb", ylab="Excess risk factor", col="darkblue")
 
 
 plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile (DK)", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
