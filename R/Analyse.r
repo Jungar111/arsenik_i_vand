@@ -35,8 +35,8 @@ AIC(analysis)
 
 # RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
 par(mfrow=c(2,1))
-plot(analysis$residuals, col=lun$group,  main = "Residual analysis (R-function)")
-plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Standardized residual analysis (manual)", xlab="Observation index")
+plot(analysis$residuals, col=lun$group,  main = "Standardized residual analysis (R-function)", xlab="Observation index", ylab="Residual value")
+plot(analysis$fitted.values, (lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values), col=lun$group, main = "Standardized residual analysis (manual)", xlab="Observation index", ylab="Residual value")
 par(mfrow=c(1,1))
 ## Kan det forsvares dette plot? Og hvor mange er ude for vores konfidensinterval ud af 1118?
 length(((lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values))[(lun$events - analysis$fitted.values)/sqrt(analysis$fitted.values) > 4])
@@ -355,34 +355,3 @@ lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
 #
 
-##### 2A-23, bruges ikke >.< #####
-### 2A-23:
-# Hvis man ved at person har overlevet til t0 (i dette tilfælde er t0 = 1) år, hvad er så sandsynligheden for at dø af lungekræft.
-sum((m$hlist[i]/m$hslist[i]) * m$kombi[i]) * 100
-
-## qlist er chancen for at overleve til næste aldersgruppe (komme videre fra sin egen)!
-## qi is the prob of surviving year i when all causes are acting.
-
-# village1 = 0 skulle gerne have lidt overdødelighed og
-# village1 = 1 skulle gerne ligne USA meget.
-
-# Hazard ratio = odds ratio (ikke matematisk ens men man behandler dem ens) og risk ratio og odds ratio er næsten identisk når sandsynlighederne er så små!
-# God argumentation!
-
-lun.predxx <- data.frame(conc = rep(10, to+1),
-                         age = 0:to,
-                         at.risk=100,
-                         gender = rep("Male", to+1),
-                         female = rep(0, to+1),
-                         village1 = rep(0, to+1))
-predictxx <- predict(analysis, newdata = lun.predxx, se.fit=TRUE)
-
-
-Rlunge <- 0
-Elist <- predictxx$se.fit[seq(1, length(predict1$se.fit), 4)]
-for (i in 1:21){
-  for (k in i-1){
-    Rlunge <- Rlunge + (hlist[i]*(1+Elist[i]) / hslist[i]+hlist[i]*Elist[i])* Slist[i] * (1-qlist[i] * exp(-hlist[i]*Elist[i])) * exp(-sum(hlist[k]*Elist[k]))
-  }
-}
-Rlunge
