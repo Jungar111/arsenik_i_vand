@@ -90,7 +90,7 @@ listGenerator <- function(gender){
   
   for (i in 1:21){
     his <- USAtotdeaths[i,gen]/USApop[i,gen]
-    hi <- USAblad[i,1]/USApop[i,gen]
+    hi <- USAblad[i,gen]/USApop[i,gen]
     qi <- exp(-5*his)
     qlist[i] = qi
     hslist[i] = his
@@ -268,6 +268,7 @@ genderlis <- c("Male", "Female")
 conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
 
 EL <- exp(0.0020760*conclis) - 1
+plot(conclis,EL,type=("l"), main = "Excess risk of dying from bladder cancer caused by arsenic ", xlab="Concentration", ylab="Excess risk")
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
@@ -289,9 +290,10 @@ for (j in 1:23){
 par(mfrow = (c(1,1)))
 
 
-plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability")
-points(conclis, testListFemale, col = "red")
+plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability",ylim=c(0,0.05),pch=20)
+points(conclis, testListFemale, col = "red", pch=20)
 lines(conclis, rep(l$Rbladder0, length(conclis)), col = "blue")
 lines(conclis, rep(lF$Rbladder0, length(conclis)), col = "red")
-legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c('O' ,'O', '',''), lty = c(0,0,1,1))
+legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c(20,20, NA,NA), lty = c(0,0,1,1))
+
 

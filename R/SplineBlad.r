@@ -101,6 +101,7 @@ summary(analysis)
 prediction.temp$fit
 
 
+
 # ggplot(Sample_data, aes(x, y)) + geom_point() + geom_smooth(method = lm)
 
 # Laver signifikans niveauer 
