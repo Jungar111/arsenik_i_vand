@@ -64,9 +64,22 @@ blad$at.risk1 <- blad$at.risk
 blad$at.risk1[blad$village1 == 1] <- 0
 
 
-#fjerner outliers 
+# Tjek for korrelation mellem events og variable 
+cor(blad$events[blad$group != 1],blad$age[blad$group != 1])
+cor(blad$events[blad$group != 1],blad$conc[blad$group != 1])
+cor(blad$events[blad$group != 1],blad$female[blad$group != 1])
+cor(blad$events,blad$village1)
 
-#blad <- blad[-c(126,160,636,761,764,1069),]
+plot(blad$age[blad$group != 1],blad$events[blad$group != 1],xlab="Age", ylab="Events")
+plot(blad$conc[blad$group != 1],blad$events[blad$group != 1])
+#plot(blad$female[blad$group != 1],blad$events[blad$group != 1])
+
+cor(blad$age,blad$conc)
+cor(blad$age,blad$female)
+
+cor(blad$conc,blad$female)
+
+
 
 N <- length(blad$events)
 
