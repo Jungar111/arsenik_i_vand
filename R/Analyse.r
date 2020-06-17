@@ -24,6 +24,15 @@ N <- length(lun$events)
 # p.hat (empirisk sandsynlighed)
 p.hat <- sum(lun$events/N)
 
+# Tjek for korrelation mellem events og variable 
+cor(lun$events[lun$group != 1],lun$age[lun$group != 1])
+cor(lun$events[lun$group != 1],lun$conc[lun$group != 1])
+cor(lun$events[lun$group != 1],lun$female[lun$group != 1])
+cor(lun$events,lun$village1)
+
+plot(lun$age[lun$group != 1],lun$events[lun$group != 1],xlab="Age", ylab="Events")
+plot(lun$conc[lun$group != 1],lun$events[lun$group != 1])
+
 
 ################ General Additive Model / GLM / Model-definering ###################
 analysis <- gam(events~s(age) + s(age,by=female) + I(conc) + gender*village1
@@ -41,6 +50,8 @@ par(mfrow=c(1,1))
 ## Kan det forsvares dette plot? Og hvor mange er ude for vores konfidensinterval ud af 1118?
 length(((lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values))[(lun$events - analysis$fitted.values)/sqrt(analysis$fitted.values) > 4])
 1 - pnorm(4)^(1118 - 12)
+# Se lige den her!!! Vi spørger Anders på fredag...
+plot(residuals.gam(analysis), main="Standardized residual analysis (R-function)", xlab="Index value", ylab="Residual value", col="black")
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
