@@ -198,7 +198,7 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 }
 
 genderlis <- c("Male", "Female")
-conclis <- c(0,5,10,25, seq(50, 900, by = 50))
+conclis <- c(0,5,10,14,25, seq(50, 900, by = 50))
 # Tallet o.0015057 kommer fra summary(analysis) og er koefficient-estimatet til conc.
 EL <- exp(0.0015057*conclis) - 1
 
@@ -228,4 +228,3 @@ lines(conclis, testListFemale, col="red", lty=3)
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
-#
