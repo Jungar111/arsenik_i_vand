@@ -192,14 +192,14 @@ USApop <- as.data.frame(USApop)
 ####################### USA PLOT-TID #########################
 ## Herunder er plots af hver af de 3 inddelinger med tilhørende overskrifter.
 # Lung cancer deaths
-plot(USAlun$age, (USAlun$Male+USAlun$Female), main="Number of deaths: Lung cancer", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
+plot(USAlun$age, (USAlun$Male+USAlun$Female), main="Number of deaths: Lung cancer (1996)", xlab="Age in years", ylab="Number of deaths", type="l", col="black")
 lines(USAlun$age, USAlun$Female, col="red")
 lines(USAlun$age, USAlun$Male, col="blue")
 legend("topleft", legend=c("Both", "Male", "Female"),
        col=c("black", "blue", "red"), lty=c(1,1,1), cex=0.8)
 
 # All causes death-plot
-plot(USAtotdeaths$age, (USAtotdeaths$Male+USAtotdeaths$Female), main="Number of deaths: All causes", xlab="Age in years", ylab="Number of deaths", type="l")
+plot(USAtotdeaths$age, (USAtotdeaths$Male+USAtotdeaths$Female), main="Number of deaths: All causes (1996)", xlab="Age in years", ylab="Number of deaths", type="l")
 lines(USAtotdeaths$age, USAtotdeaths$Female, col="red")
 lines(USAtotdeaths$age, USAtotdeaths$Male, col="blue")
 legend("topleft", legend=c("Both", "Male", "Female"),
@@ -208,7 +208,7 @@ legend("topleft", legend=c("Both", "Male", "Female"),
 # Population plot
 # Læg mærke til, at y-aksen er divideret med 5 for at gøre op for, at aldersinddelingen er hvert 5. år.
 # Ellers havde der været 5 gange så mange mennesker i USA, som der er.
-plot(USApop$age, (USApop$Male+USApop$Female)/5, main="Total population of USA", xlab="Age in years", ylab="Number of people", type="l")
+plot(USApop$age, (USApop$Male+USApop$Female)/5, main="Total population of USA (1996)", xlab="Age in years", ylab="Number of people", type="l")
 lines(USApop$age, USApop$Female/5, col="red")
 lines(USApop$age, USApop$Male/5, col="blue")
 legend("topright", legend=c("Both", "Male", "Female"),
