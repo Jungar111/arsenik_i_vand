@@ -62,15 +62,15 @@ sd.Pred <- sd(prediction.data.original$pred[0:maxr])
 lines(0:maxr+sd.Pred, 0:maxr, type="l", col = "red")
 lines(0:maxr-sd.Pred, 0:maxr, type="l", col = "red")
 
+
+
 v = vector()
 x = vector()
 
-# lun$events <- lun$events[order(lun$events, decreasing = TRUE)]
-
 for (i in 1:length(prediction.data.original$pred)){
-  res <- mean(lun$events[0.007*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.007*i])
+  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
   v = c(v, res)
-  x = c(x, 0.007*i)}
+  x = c(x, 0.01*i)}
 
 plot(x, v, xlim=c(0, maxr), ylim=c(0, maxr), xlab="Average predicted events", ylab="Average actual events")
 lines(0:maxr,0:maxr, type="l")
