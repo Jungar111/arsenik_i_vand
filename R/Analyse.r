@@ -42,6 +42,12 @@ analysis <- gam(events~s(age) + s(age,by=female) + I(conc) + gender*village1
 summary(analysis)
 AIC(analysis)
 
+# Oversættelsen af GAM'en til en GLM
+# analysis <- glm(events~age + gender:age + I(age^2) + conc + gender*village1
+#                 + offset(I(log(at.risk))),
+#                 family=poisson(link = "log"),
+#                 data=lun)
+
 # RESIDUAL PLOT ---> Først indbygget funktion, herefter manuel!
 par(mfrow=c(2,1))
 plot(analysis$residuals, col=lun$group,  main = "Standardized residual analysis (R-function)", xlab="Observation index", ylab="Residual value")
