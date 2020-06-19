@@ -59,7 +59,7 @@ beder$MEDIAN_ANALYSEVAERDI
 
 
 studstrupConc <- 14
-studsstrup.atrisk <- 842
+studsstrup.atrisk <- 857
 
 studsstrup.atriskM <- studsstrup.atrisk/2
 studsstrup.atriskF <- studsstrup.atrisk/2
