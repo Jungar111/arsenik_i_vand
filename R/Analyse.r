@@ -1,7 +1,7 @@
 library(mgcv)
 library(ggplot2)
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
@@ -165,6 +165,41 @@ lun.pred100 <- data.frame(conc = lun$conc,
 ggplot(lun.pred100, aes(x = conc)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
 
 ggplot(lun.pred100, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1) + geom_point(aes(y = pred.cases/pop*100), colour = "red", size = 1, alpha = 0.5)
+
+
+# Konfidensintervaller 
+maxr <- 5
+
+v = vector()
+v.upper = vector()
+v.lower = vector()
+x = vector()
+
+
+for (i in 1:(length(prediction.data.original$pred)*10)){
+  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  res.upper <- mean(lun$events[0.1*(i-1) <= prediction.data.original$upper & prediction.data.original$upper < 0.1*i])
+  res.lower <- mean(lun$events[0.1*(i-1) <= prediction.data.original$lower & prediction.data.original$lower < 0.1*i])
+  v = c(v,res)
+  v.upper = c(v.upper,res.upper)
+  v.lower = c(v.lower,res.lower)
+  x = c(x, 0.1*i-0.05)
+}
+
+
+v2 <- v[!is.nan(v)]
+v1 <- sqrt((abs(v-lun$events))/sqrt(v))[!is.nan(v)]
+x1 <- x[!is.nan(v)]
+
+# confidence interval 
+conf<- cipoisson(v2, time = 1, p = 0.95, method = c("exact", "anscombe"))
+
+plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Actual events", main="Confidence interval")
+lines(x1,conf[,1]-v2+x1, col = "red")
+lines(x1,conf[,2]-v2+x1, col = "green")
+lines(0:maxr,0:maxr, type="l")
+
+plot(lun$events,prediction.data.original$pred)
 
 
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
