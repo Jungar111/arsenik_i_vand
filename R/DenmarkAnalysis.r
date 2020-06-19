@@ -1,7 +1,7 @@
 library(mgcv)
 library(ggplot2)
 # Frederik wd
-# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
@@ -201,6 +201,8 @@ genderlis <- c("Male", "Female")
 conclis <- c(0,5,10,14,25, seq(50, 900, by = 50))
 # Tallet o.0015057 kommer fra summary(analysis) og er koefficient-estimatet til conc.
 EL <- exp(0.0015057*conclis) - 1
+
+
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
