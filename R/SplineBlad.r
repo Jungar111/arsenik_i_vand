@@ -182,13 +182,13 @@ x1 <- x[!is.nan(v)]
 # confidence interval 
 conf<- cipoisson(v2, time = 1, p = 0.95, method = c("exact", "anscombe"))
 
-plot(v2, x1, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index", main="Confidence interval")
-lines(conf[,2], x1, col = "red")
-lines(conf[,1], x1, col = "green")
+plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index", main="Confidence interval")
+lines(x1,conf[,1]-v2+x1, col = "red")
+lines(x1,conf[,2]-v2+x1, col = "green")
 lines(0:maxr,0:maxr, type="l")
 
 
-plot(x,v.lower)
+plot(x,v)
 lines(x,v.lower, col = "red")
 lines(prediction.data$upper, type = 'l', col = "red")
 lines(x, v.lower, xlim=c(0, maxr), ylim = c(0,maxr))
