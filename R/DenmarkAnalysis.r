@@ -133,41 +133,41 @@ m <- listGenerator("Male")
 f <- listGenerator("Female")
 
 # Plot af hs*list for male og female. 
-plot(0:18*5, m$hslist*100, main="Risk of not surviving through age i (all causes)", xlab="Age", ylab="Probability in %", type="l", col="blue")
+plot(0:18*5, m$hslist*100, main="Risk of not surviving through age i (all causes) (DK)", xlab="Age", ylab="Probability in %", type="l", col="blue")
 lines(0:18*5, f$hslist*100, col="red")
 legend("topleft", legend=c("Male", "Female"),
        col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
 # Plot af hlist for male og female.
-plot(0:18*5, m$hlist*100, main="Risk of not surviving through age i (lung cancer)", xlab="Age", ylab="Probability in %", type="l", col="blue")
+plot(0:18*5, m$hlist*100, main="Risk of not surviving through age i (lung cancer) (DK)", xlab="Age", ylab="Probability in %", type="l", col="blue")
 lines(0:18*5, f$hlist*100, col="red")
 legend("topleft", legend=c("Male", "Female"),
        col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
 # Plot af Slist for male og female. 2A-18!
-plot(0:18*5, m$Slist*100, main="Chance of surviving to age i", xlab="Age", ylab="Probability in %", type="l", col="blue")
+plot(0:18*5, m$Slist*100, main="Chance of surviving to age i (DK)", xlab="Age", ylab="Probability in %", type="l", col="blue")
 lines(0:18*5, f$Slist*100, col="red")
 legend("topright", legend=c("Male", "Female"),
        col=c("blue", "red"), lty=c(1,1), cex=0.7)
 
 # Plot af kombi for male og female. 2A-19!
-plot(0:18*5, f$kombi*100, main="Prob. of dying at age i (all causes)", xlab="Age", ylab="Probability in %", type="l", col="red")
+plot(0:18*5, f$kombi*100, main="Prob. of dying at age i (all causes) (DK)", xlab="Age", ylab="Probability in %", type="l", col="red")
 lines(0:18*5, m$kombi*100, col="blue")
 legend("topleft", legend=c("Male", "Female"),
        col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
 # Plot af kombi1 for male og female. 2A-20!
-plot(0:18*5, m$kombi1*100, main="Prob. of dying at age i (lung cancer)", xlab="Age", ylab="Probability in %", type="l", col="blue")
+plot(0:18*5, m$kombi1*100, main="Prob. of dying at age i (lung cancer) (DK)", xlab="Age", ylab="Probability in %", type="l", col="blue")
 lines(0:18*5, f$kombi1*100, col="red")
 legend("topleft", legend=c("Male", "Female"),
        col=c("blue", "red"), lty=c(1,1), cex=0.9)
 
 # sammenligning --> Det f.eks interessant at lunc cancer peaker før all causes! Der er en mulig trend at spore.
-plot(0:18*5, f$kombi*100, type="l", main="Prob. of dying at age i", xlab="Age", ylab="Probability in %", col="red")
+plot(0:18*5, f$kombi*100, type="l", main="Prob. of dying at age i (DK)", xlab="Age", ylab="Probability in %", col="red")
 lines(0:18*5, f$kombi1*100, lty=2, col="red")
 lines(0:18*5, m$kombi*100, lty=1, col="blue")
 lines(0:18*5, m$kombi1*100, lty=2, col="blue")
-legend("topleft", legend=c("All causes (female)", "Lung cancer (female)", "All causes (male)", "Lung cancer (male)"),
+legend("bottomleft", legend=c("All causes (female)", "Lung cancer (female)", "All causes (male)", "Lung cancer (male)"),
        col=c("red", "red", "blue", "blue"), lty=c(1,2,1,2), cex=0.9)
 
 
