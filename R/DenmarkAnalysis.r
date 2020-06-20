@@ -1,7 +1,7 @@
 library(mgcv)
 library(ggplot2)
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
@@ -201,11 +201,16 @@ genderlis <- c("Male", "Female")
 conclis <- c(0,5,10,14,25, seq(50, 900, by = 50))
 # Tallet o.0015057 kommer fra summary(analysis) og er koefficient-estimatet til conc.
 EL <- exp(0.0015057*conclis) - 1
-
-
+ELUp <- exp((0.0015057 + 1.96*0.0002202)*conclis) - 1
+ELDown <- exp((0.0015057 - 1.96*0.0002202)*conclis) - 1
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
+testListMaleUp <- numeric(0)
+testListFemaleUp <- numeric(0)
+testListMaleDown <- numeric(0)
+testListFemaleDown <- numeric(0)
+
 colIndex <- 1
 
 for (j in 1:length(conclis)){
@@ -220,13 +225,39 @@ for (j in 1:length(conclis)){
   }
 }
 
-plot(0:21*(934/21), EL, type="l", main="Excess Risk Profile", xlab="Concentration in ppb", ylab="Excess risk factor", col="darkblue")
+for (j in 1:length(conclis)){
+  e <- ELUp[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaleUp <- c(testListMaleUp, rLun(1, gender, colIndex, m, e))
+    }else{
+      testListFemaleUp <- c(testListFemaleUp, rLun(1, gender, colIndex, f, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
+for (j in 1:length(conclis)){
+  e <- ELDown[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaleDown <- c(testListMaleDown, rLun(1, gender, colIndex, m, e))
+    }else{
+      testListFemaleDown <- c(testListFemaleDown, rLun(1, gender, colIndex, f, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
+
+plot(0:22*(934/23), EL, type="l", main="Excess Risk Profile", xlab="Concentration in ppb", ylab="Excess risk factor", col="darkblue")
 
 
 plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile (DK)", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
 points(conclis, testListFemale, col = "red", pch=20)
 lines(conclis, testListMale, col="blue", lty=3)
 lines(conclis, testListFemale, col="red", lty=3)
+polygon(c(conclis, rev(conclis)), c(testListMaleUp, rev(testListMaleDown)), col=rgb(0,0,1,0.2), border=NA)
+polygon(c(conclis, rev(conclis)), c(testListFemaleUp, rev(testListFemaleDown)), col=rgb(1,0,0,0.2), border=NA)
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
+#
