@@ -1,7 +1,8 @@
 library(mgcv)
 library(ggplot2)
+library(survival)
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+# setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 # Asger wd
 #setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 # Joachim wd
@@ -56,8 +57,6 @@ par(mfrow=c(1,1))
 ## Kan det forsvares dette plot? Og hvor mange er ude for vores konfidensinterval ud af 1118?
 length(((lun$events - analysis$fitted.values) / sqrt(analysis$fitted.values))[(lun$events - analysis$fitted.values)/sqrt(analysis$fitted.values) > 4])
 1 - pnorm(4)^(1118 - 12)
-# Se lige den her!!! Vi spørger Anders på fredag...
-plot(residuals.gam(analysis), main="Standardized residual analysis (R-function)", xlab="Index value", ylab="Residual value", col="black")
 
 # Laver signifikans niveauer 
 prediction.temp<-as.data.frame(predict(analysis, se.fit=T))
@@ -177,13 +176,13 @@ x = vector()
 
 
 for (i in 1:(length(prediction.data.original$pred)*10)){
-  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
+  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
   res.upper <- mean(lun$events[0.1*(i-1) <= prediction.data.original$upper & prediction.data.original$upper < 0.1*i])
   res.lower <- mean(lun$events[0.1*(i-1) <= prediction.data.original$lower & prediction.data.original$lower < 0.1*i])
   v = c(v,res)
   v.upper = c(v.upper,res.upper)
   v.lower = c(v.lower,res.lower)
-  x = c(x, 0.1*i-0.05)
+  x = c(x, 0.01*i-0.005)
 }
 
 
@@ -199,7 +198,6 @@ lines(x1,conf[,1]-v2+x1, col = "red")
 lines(x1,conf[,2]-v2+x1, col = "green")
 lines(0:maxr,0:maxr, type="l")
 
-plot(lun$events,prediction.data.original$pred)
 
 
 ################## USA ANALYSE --> DATA INDLÆSNING #####################
@@ -380,9 +378,15 @@ rLun <- function(conc, gender, colIndex, listCollection, e){
 genderlis <- c("Male", "Female")
 conclis <- c(0,5,10,25, seq(50, 900, by = 50))
 EL <- exp(0.0015057*conclis) - 1
+ELup <- exp((0.0015057 + (1.96*0.000220)) * conclis) - 1
+ELdown <- exp((0.0015057 - (1.96*0.000220)) * conclis) - 1
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
+testListMaleup <- numeric(0)
+testListFemaleup <- numeric(0)
+testListMaledown <- numeric(0)
+testListFemaledown <- numeric(0)
 colIndex <- 1
 
 for (j in 1:length(conclis)){
@@ -397,13 +401,38 @@ for (j in 1:length(conclis)){
   }
 }
 
+for (j in 1:length(conclis)){
+  e <- ELup[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaleup <- c(testListMaleup,rLun(1, gender, colIndex, m, e))
+    }else{
+      testListFemaleup <- c(testListFemaleup,rLun(1, gender, colIndex, f, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
+
+for (j in 1:length(conclis)){
+  e <- ELdown[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaledown <- c(testListMaledown,rLun(1, gender, colIndex, m, e))
+    }else{
+      testListFemaledown <- c(testListFemaledown,rLun(1, gender, colIndex, f, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
+
 
 plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from lung cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability", ylim=c(0,0.25), pch=20)
 points(conclis, testListFemale, col = "red", pch=20)
 lines(conclis, testListMale, col="blue", lty=3)
 lines(conclis, testListFemale, col="red", lty=3)
+polygon(c(conclis, rev(conclis)), c(testListMaleup, rev(testListMaledown)), col=rgb(0,0,1,0.2), border=NA)
+polygon(c(conclis, rev(conclis)), c(testListFemaleup, rev(testListFemaledown)), col=rgb(1,0,0,0.2), border=NA)
 lines(conclis, rep(m$Rlung0, length(conclis)), col = "blue")
 lines(conclis, rep(f$Rlung0, length(conclis)), col = "red")
 legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch=c(20,20,NA,NA), lty = c(0,0,1,1), cex=0.7)
 #
-
