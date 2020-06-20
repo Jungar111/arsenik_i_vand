@@ -168,7 +168,7 @@ ggplot(lun.pred100, aes(x = age)) + geom_point(aes(y = cases/pop*100), size = 1)
 
 
 # Konfidensintervaller 
-maxr <- 5
+maxr <- 2
 
 v = vector()
 v.upper = vector()
