@@ -268,12 +268,20 @@ genderlis <- c("Male", "Female")
 conclis <- c(0, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
 
 EL <- exp(0.0020760*conclis) - 1
+ELUp <- exp((0.0020760 + 1.96*0.0002735)*conclis) - 1
+ELdown <- exp((0.0020760 - 1.96*0.0002735)*conclis) - 1
 plot(conclis,EL,type=("l"), main = "Excess risk of dying from bladder cancer caused by arsenic ", xlab="Concentration", ylab="Excess risk")
 
 testListMale <- numeric(0)
 testListFemale <- numeric(0)
+testListMaleUp <- numeric(0)
+testListFemaleUp <- numeric(0)
+testListMaleDown <- numeric(0)
+testListFemaleDown <- numeric(0)
+
 colIndex <- 1
 
+## UNDSKYLD FOR 3 LOOPS!
 for (j in 1:23){
   e <- EL[j]
   for (gender in genderlis){
@@ -286,14 +294,41 @@ for (j in 1:23){
     }
 }
 
+for (j in 1:23){
+  e <- ELUp[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaleUp <- c(testListMaleUp,rLun(1, gender, colIndex, l, e))
+    }else{
+      testListFemaleUp <- c(testListFemaleUp,rLun(1, gender, colIndex, lF, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
+
+for (j in 1:23){
+  e <- ELdown[j]
+  for (gender in genderlis){
+    if (gender == "Male"){
+      testListMaleDown <- c(testListMaleDown,rLun(1, gender, colIndex, l, e))
+    }else{
+      testListFemaleDown <- c(testListFemaleDown,rLun(1, gender, colIndex, lF, e))
+    }
+    colIndex <- colIndex + 1
+  }
+}
 
 par(mfrow = (c(1,1)))
 
 
 plot(conclis, testListMale, col = "blue", main="Lifetime probability of dying from bladder cancer \n with excess risk profile", xlab="Concentration in ppb", ylab="Lifetime probability",ylim=c(0,0.05),pch=20)
 points(conclis, testListFemale, col = "red", pch=20)
+lines(conclis, testListMale, col = "blue", lty=3)
+lines(conclis, testListFemale, col = "red", lty=3)
+polygon(c(conclis, rev(conclis)), c(testListMaleUp, rev(testListMaleDown)), col=rgb(0,0,1,0.2), border=NA)
+polygon(c(conclis, rev(conclis)), c(testListFemaleUp, rev(testListFemaleDown)), col=rgb(1,0,0,0.2), border=NA)
 lines(conclis, rep(l$Rbladder0, length(conclis)), col = "blue")
 lines(conclis, rep(lF$Rbladder0, length(conclis)), col = "red")
-legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c(20,20, NA,NA), lty = c(0,0,1,1))
+legend("topleft", legend = c("Male", "Female", "Male Baseline", "Female Baseline"), col = c("blue", "red", "blue", "red"), pch = c(20,20, NA,NA), lty = c(0,0,1,1), cex=0.8)
 
 
