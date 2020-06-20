@@ -40,21 +40,40 @@ library(readxl)
 library(readr)
 AarhusBefolkning <- read_csv("hele-befolkningen-1-januar-2013.csv", skip = 1)
 
+
 grundvand <- read_excel("grundvand-2.xls")
 grundvand <- grundvand[grundvand$BORINGSANVENDELSE == "Vandværksboring" & grundvand$AKTIV_INDVINDING_JN  == "J",]
+
+Jern_I_DK <- read_excel("Data/Jern_I_DK.xls")
+Jern_I_DK <- Jern_I_DK[Jern_I_DK$BORINGSANVENDELSE == "Vandværksboring" & Jern_I_DK$AKTIV_INDVINDING_JN  == "J",]
 
 viby <- grundvand[grundvand$ANLAEGS_NAVN == "Vibyværket",]
 mårslet <- grundvand[grundvand$ANLAEGS_NAVN == "Mårslet Vandværk",]
 beder <- grundvand[grundvand$ANLAEGS_NAVN == "Bederværket",]
+vibyFe <- Jern_I_DK[Jern_I_DK$ANLAEGS_NAVN == "Vibyværket",]
+mårsletFe <- Jern_I_DK[Jern_I_DK$ANLAEGS_NAVN == "Mårslet Vandværk",]
+bederFe <- Jern_I_DK[Jern_I_DK$ANLAEGS_NAVN == "Bederværket",]
+
+
+
 
 viby <- viby[viby$DATO_SENESTE_ANALYSE == "2020-04-23",]
+vibyFe <- vibyFe[vibyFe$DATO_SENESTE_ANALYSE == "2020-04-23",]
 viby$MEDIAN_ANALYSEVAERDI
+viby$ANLAEG_ID
+
+
 
 mårslet <- mårslet[mårslet$DATO_SENESTE_ANALYSE == "2019-08-14",]
+mårsletFe <- mårsletFe[mårsletFe$DATO_SENESTE_ANALYSE == "2019-08-14",]
 mårslet$MEDIAN_ANALYSEVAERDI
+mårslet$ANLAEG_ID
+
 
 beder <- beder[beder$DATO_SENESTE_ANALYSE == "2020-04-02",]
+bederFe <- bederFe[bederFe$DATO_SENESTE_ANALYSE == "2020-04-02",]
 beder$MEDIAN_ANALYSEVAERDI
+beder$ANLAEG_ID
 
 
 
@@ -67,3 +86,4 @@ studsstrup.atriskF <- studsstrup.atrisk/2
 
 (testListFemale[conclis == studstrupConc] - testListFemale[conclis == 0])*studsstrup.atrisk
 (testListMale[conclis == studstrupConc] - testListMale[conclis == 0])*studsstrup.atrisk
+
