@@ -176,13 +176,13 @@ x = vector()
 
 
 for (i in 1:(length(prediction.data.original$pred)*10)){
-  res <- mean(lun$events[0.01*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.01*i])
+  res <- mean(lun$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
   res.upper <- mean(lun$events[0.1*(i-1) <= prediction.data.original$upper & prediction.data.original$upper < 0.1*i])
   res.lower <- mean(lun$events[0.1*(i-1) <= prediction.data.original$lower & prediction.data.original$lower < 0.1*i])
   v = c(v,res)
   v.upper = c(v.upper,res.upper)
   v.lower = c(v.lower,res.lower)
-  x = c(x, 0.01*i-0.005)
+  x = c(x, 0.1*i-0.05)
 }
 
 
@@ -193,10 +193,11 @@ x1 <- x[!is.nan(v)]
 # confidence interval 
 conf<- cipoisson(v2, time = 1, p = 0.95, method = c("exact", "anscombe"))
 
-plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Actual events", main="Confidence interval")
+plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Actual events", main="Predictions versus actual events")
 lines(x1,conf[,1]-v2+x1, col = "red")
 lines(x1,conf[,2]-v2+x1, col = "green")
 lines(0:maxr,0:maxr, type="l")
+polygon(c(x1,rev(x1)),c(conf[,1]-v2+x1, rev(conf[,2]-v2+x1)), col = rgb(0,0,0,0.4), border = NA)
 
 
 
