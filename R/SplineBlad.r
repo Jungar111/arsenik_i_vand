@@ -9,10 +9,10 @@ library("patchwork")
 library("hrbrthemes")
 
 # Frederik wd
-setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
+#setwd("C:\\Users\\frede\\OneDrive\\Dokumenter\\DTU\\4. Semester\\Fagprojekt\\ArsenikGit\\Data")
 
 # Asger wd
-#setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
+setwd("/Users/AsgerSturisTang/OneDrive - Danmarks Tekniske Universitet/DTU/4. Semester/Arsenik i GIT/Data")
 
 # Joachim wd
 #setwd("/Users/JoachimPorsA/Documents/4. Semester - DTU/Fagprojekt/Data/Arsenik i vand/Data")
@@ -416,6 +416,7 @@ eventPlot = function(){
   lines(exp(predict7$fit), lty=4, col="blue")
   lines(exp(predict8$fit), lty=4, col="red")
   legend(5, 0.5, legend=c("Male", "Female", "0 ppb","10 ppb", "50 ppb", "100 ppb"),col=c("blue", "red", 1, 1, 1,1), lty=c(1,1,1,2,3,4), cex=0.8)
+  return(c(max((predict1$fit)), max((predict7$fit)), max((predict2$fit)),max((predict8$fit))))
 }
 eventPlot()
 
@@ -474,3 +475,14 @@ predictFemaleUs <- predict(analysis, newdata = bladpredUSfemale, se.fit=TRUE)
 
 plot(exp(predictMaleUs$fit), type = "l", col = "blue")
 lines(exp(predictFemaleUs$fit), type = "l", col = "red")
+
+ekstradød <- function(x){
+  return(exp(0.002072 * x) - 1)
+}
+
+
+givmigdeTal <- function(conc1,conc2,pop1,pop2,pop3){
+  return(c(ekstradød(conc1)*pop1, ekstradød(conc2)*pop1, ekstradød(conc1)*pop2, ekstradød(conc2)*pop2,ekstradød(conc1)*pop3,ekstradød(conc2)*pop3))
+}
+
+
