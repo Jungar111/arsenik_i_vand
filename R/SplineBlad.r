@@ -140,7 +140,7 @@ plot(analysis$fitted.values, ((blad$events - analysis$fitted.values)/sqrt(analys
 #lines(prediction.data.original$lower, blad$events, col="red")
 #lines(prediction.data.original$upper, blad$events, col="red")
 
-maxr <- 125
+maxr <- 5
 
 
 blad[analysis$fitted.values>20,]
@@ -164,7 +164,7 @@ x = vector()
 
 #blad$events<- blad$events[order(blad$events, decreasing = TRUE)]
 
-for (i in 1:length(prediction.data.original$pred)){
+for (i in 1:(length(prediction.data.original$pred)*12)){
   res <- mean(blad$events[0.1*(i-1) <= prediction.data.original$pred & prediction.data.original$pred < 0.1*i])
   res.upper <- mean(blad$events[0.1*(i-1) <= prediction.data.original$upper & prediction.data.original$upper < 0.1*i])
   res.lower <- mean(blad$events[0.1*(i-1) <= prediction.data.original$lower & prediction.data.original$lower < 0.1*i])
@@ -182,10 +182,13 @@ x1 <- x[!is.nan(v)]
 # confidence interval 
 conf<- cipoisson(v2, time = 1, p = 0.95, method = c("exact", "anscombe"))
 
-plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index", main="Confidence interval")
+par(mfrow = c(1,1))
+
+plot(x1, v2, xlim=c(0, maxr), ylim = c(0,maxr), xlab="Predictions", ylab="Index", main="Predictions versus actual events")
 lines(x1,conf[,1]-v2+x1, col = "red")
 lines(x1,conf[,2]-v2+x1, col = "green")
 lines(0:maxr,0:maxr, type="l")
+polygon(c(x1,rev(x1)),c(conf[,1]-v2+x1, rev(conf[,2]-v2+x1)), col = rgb(0,0,0,0.4), border = NA)
 
 
 plot(x,v)
