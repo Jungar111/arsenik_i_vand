@@ -100,7 +100,7 @@ N <- length(blad$events)
 
 
 
-analysis <- gam(events ~ s(age) + I(conc) + village1 + s(age, by = female) + offset(I(log(at.risk))), family = poisson(link = "log"), data = blad, select = TRUE)
+analysis <- gam(events ~ s(age) + I(conc) + gender*village1 + s(age, by = female) + offset(I(log(at.risk))), family = poisson(link = "log"), data = blad, select = TRUE)
 
 
 #s(age) + s(conc)+ s(conc,age) +age+I(age^2) + gender:village1+
